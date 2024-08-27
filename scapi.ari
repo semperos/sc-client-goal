@@ -19,10 +19,14 @@ pp:fmt.tbl[;3;3;"%.1f"]
 wd::0n; cd:{wd::x; (ari.prompt::entprompt[x]+"> "); x};
 san:{sub[rx/[^a-zA-Z0-9]/;""]x}; jp:{say " "json x}; / sanitize Goal name / print JSON (of ent)
 fetcher:{[abbrev;arg]p:es[abbrev];u:?[""~arg;p;p+"/"+id[arg]];get u}
-/ TODO poster putter for POST and PUT
-/ API
-/ TODO Add help for fetchers
+poster:{[abbrev;body]b:""json body; u:es[abbrev]; post[u;..[Body:b]]}
+putter:{[abbrev;arg;body]u:es[abbrev]+"/"+id[arg]; b:""json body; ; put[u;..[Body:b]]}
+/ TODO Add help for fetcher, putter, poster
+/ TODO Consider st.*, ep.*, instead of everything under sc.*
 {::[x;fetcher[x]]; ::["sc."+x;fetcher[x]]}'!es; / DEF API ent fetchers, w/wout pfx
+{::[x;poster[x]]; ::["sc.create"+x;poster[x]]}'!es; / DEF API ent posters, w/wout pfx
+{::[x;putter[x]]; ::["sc.update"+x;putter[x]]}'!es; / DEF API ent putters, w/wout pfx
+/ DELETE endpoints intentionally unsupported. Archive via PUT as needed.
 sth:{[st]i:id[st]; get"stories/$i/history"}
 stsglobals:{[fld]k:"sts."+san[fld]; ::[k;fld]}; stsglobals'stsfields / DEF story search fields
 sts:{[stsd]body:""json stsd; post["stories/search";..[Body:body]]} / API story search
