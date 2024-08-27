@@ -1,0 +1,26 @@
+""import"../scapi.ari"
+say"PLEASE WAIT. Fetching all labels with their stories and/or epics."
+lbs:lb""; lbsstories:lb.st'lbs; lbsepics:lb.ep'lbs
+nosts:0=#'lbsstories; noeps:0=#'lbsepics
+ALLNONE:lbs@&nosts&noeps
+
+SNONE:lbs[&nosts] / labels with no stories
+ENONE:lbs[&noeps] / labels with no epics
+
+say"Loading workspace2 data..."
+""import"../scdata.ari"
+
+/ TODO can use "completed" field instead
+SDONE:lbs@&1~'{&/x}'st.done''lbsstories / labels with stories, all stories done
+EDONE:lbs@&1~'{&/x}'ep.done''lbsepics   / labels with epics,   all epics done
+
+ids:@[;"id"]'; seti:{x[&~(#y)=(ids y)?(ids x)]} / set intersection
+ALLDONE:seti[SDONE;EDONE]
+ALLSDONE:seti[SDONE;ENONE]
+ALLEDONE:seti[EDONE;SNONE]
+
+ARCHIVE:,/(ALLNONE;ALLDONE;ALLSDONE;ALLEDONE)
+cols:{A:x[("id";"name";"app_url")];@[A;0;"i"$]}'ARCHIVE
+hd:!"id name app_url"
+t:hd!+cols; t:@[t;"id";"i"$]; t:@[t;"name";rx/\t/ sub " "] / int id; name w/out csv sep
+f:"labels.csv"; f print"\t"csv t; say "Wrote archive-able labels to $f"

@@ -1,0 +1,12 @@
+/ DATA FETCH for specific workspace2
+mems:get"members"; grps:get"groups"; wfs:get"workflows"
+wfsts::()!(); {[wf]{[state]wfsts[state"id"]:state}'wf"states"}'wfs / DEF dict from workflow state id to self
+epwf:get"epic-workflow"; epsts:(@[;"id"]'epsts)!epsts:epwf["epic_states"]
+mnames:(..profile["mention_name"])'mems; mnamed:mnames!mems
+mnameglobals:{[mname]k:"mb."+san[mname]; v:mnamed[mname]; n:mnamed[mname;"profile";"name"]; help[k;"Member: $n"]; ::[k;v]}
+mnameglobals'mnames / DEF mb. (members)
+mbid:((..id)'mems)!mems
+gnames:(..x["mention_name"])'grps; gnamed:gnames!grps; gnameglobals:{[gname]k:"gr."+san[gname]; v:gnamed[gname]; n:gnamed[gname;"name"]; help[k;"Group/Team: $n"]; ::[k;v]}
+ign:gnameglobals'gnames / DEF gr. (groups)
+grid:((..id)'grps)!grps
+
