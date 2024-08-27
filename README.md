@@ -10,6 +10,24 @@ First, install the `ari` command:
 go install github.com/semperos/ari/cmd/ari@latest
 ```
 
+To start a REPL with functions for calling the Shortcut API:
+
+```shell
+ari -l scapi.ari
+```
+
+You can also load `scdata.ari` to have your Shortcut workspace's members, groups/teams, workflows, etc. downloaded up front (increases start-up time dramatically):
+
+```shell
+ari -l scapi.ari -l scdata.ari
+```
+
+For one-shot scripts that shouldn't start the REPL, pass your script as a positional argument to the `ari` command:
+
+```shell
+ari -l scapi.ari your-script.ari
+```
+
 ## License
 
 Copyright 2024 Daniel Gregoire
