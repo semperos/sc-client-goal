@@ -1,0 +1,23 @@
+""import"scapi.ari"; ""import"scdata.ari"
+T:0w;F:-0w
+psmb:{p:epr[x]; tl:x["profile";"mention_name"]; "$p (`$tl)"}
+ppsmb:{p:epr[x]; tl:x["profile";"mention_name"]; "$p (`$tl)"}
+shmb:{say psmb[x]}
+show:{[ent]tp:et[ent];
+ ks:?[tp="member";]
+  fmt.dict[ent[!#*ent;!"name id"];"%.2f"]}
+cs:{base:..[archived:F;"workflow_state_types":!"backlog unstarted started"]
+ ?[x; (sts@base["owner_id"]:id[x]); (sts@base["owner_id"]:id[ce])]} / current stories
+numerals:,/!10,"c"$'97+!6
+hex:{sub[" ";"0"]2!""/"s"$'numerals@16\x}
+rtoh:{[rgb] "#"+""/hex'rgb}
+tolbright:rtoh@..[gray:3#187;blue:46 37 133;green:51 117 56;cyan:93 168 153;yellow:148 203 236;pink:220 205 125;purple:194 106 119]
+showpal:{[d]{print'tui.render[x;"WOW "]}'tui.style'{..[Foreground:x]}'tui.color'd;1}
+showpal tolbright
+memepics:{[yearmonthS;yearmonthE;member] / for member from yearmonthS inclusive to yearmonthE exclusive, in format "2024-01"
+  q:..[archived:F;"workflow_state_types":,"done";"owner_id":q.id p.member
+       "completed_at_start":"$yearmonthS-01T00:00:00Z";"completed_at_end":"$yearmonthE-01T00:00:00Z"]
+  ss:sts[q]; ids:(..x["epic_id"])'ss; ids:^?(..0n~'p.ids)^ids
+  /epicnames:(..x["name"][0;30]+"...")'epics
+  epics:sc.ep'ids; epicnames:(..name)'epics; epicurls:(..x["app_url"])'epics
+  (!"id name url")!(ids;epicnames;epicurls)}
