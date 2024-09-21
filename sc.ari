@@ -14,7 +14,7 @@ rtoh:{[rgb] "#"+""/hex'rgb}
 tolbright:rtoh@..[gray:3#187;blue:46 37 133;green:51 117 56;cyan:93 168 153;yellow:148 203 236;pink:220 205 125;purple:194 106 119]
 showpal:{[d]{print'tui.render[x;"WOW "]}'tui.style'{..[Foreground:x]}'tui.color'd;1}
 showpal tolbright
-memepics:{[yearmonthS;yearmonthE;member] / for member from yearmonthS inclusive to yearmonthE exclusive, in format "2024-01"
+memepics:{[yearmonthS;yearmonthE;member] / mb epics [yearmonthS,yearmonthE) eg "2024-01"
   q:..[archived:F;"workflow_state_types":,"done";"owner_id":q.id p.member
        "completed_at_start":"$yearmonthS-01T00:00:00Z";"completed_at_end":"$yearmonthE-01T00:00:00Z"]
   ss:sts[q]; ids:(..x["epic_id"])'ss; ids:^?(..0n~'p.ids)^ids
