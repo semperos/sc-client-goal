@@ -1,8 +1,8 @@
 ari.prompt:"sc> "
 url:"https://api.app.shortcut.com/api/v3/"; tok: 'env "SHORTCUT_API_TOKEN"
 aj:"application/json"; hd:..["Shortcut-Token":tok;Accept:aj;"Content-Type":aj]; hc:http.client[..[Header:hd]]
-hp:{[f]{[httpf;path]r: 'httpf[hc;url+path]; 'json r"string"}[f]}
-hpp:{[f]{[httpf;path;reqopts]r: 'httpf[hc;url+path;reqopts]; 'json r"string"}[f]}
+hp:{[f]{[httpf;path]r: 'httpf[hc;url+path]; 'json r"bodystring"}[f]}
+hpp:{[f]{[httpf;path;reqopts]r: 'httpf[hc;url+path;reqopts]; 'json r"bodystring"}[f]}
 get:hp[http.get]; post:hpp[http.post]; put:hpp[http.put]; browse:{[ent]u:ent"app_url"; shell "open $u"}
 sg:{[s]or[..["stories":"story"]s;-1_s]}; infi:1=sign; / singular, infinity-to-int
 ist:{and["d"=@x;&/"s"=@'!x;&/{(@'x)¿"ANSI"}x;&/(*ls)=ls:#'x]}; mkt:{[D]ks:!*D; ks!+.'D} / is table / mk table
