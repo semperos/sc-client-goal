@@ -1,23 +1,24 @@
-""import"scapi.ari"; ""import"scdata.ari"
-T:0w;F:-0w
+/ Until import supports custom extensions on the GOALLIB,
+/ user needs to import these themselves.
+/""import"./scapi.ari"; ""import"./scdata.ari"
 psmb:{p:epr[x]; tl:x["profile";"mention_name"]; "$p (`$tl)"}
 ppsmb:{p:epr[x]; tl:x["profile";"mention_name"]; "$p (`$tl)"}
 shmb:{say psmb[x]}
 show:{[ent]tp:et[ent];
  ks:?[tp="member";]
   fmt.dict[ent[!#*ent;!"name id"];"%.2f"]}
-cs:{base:..[archived:F;"workflow_state_types":!"backlog unstarted started"]
+cs:{base:..[archived:-0w;"workflow_state_types":!"backlog unstarted started"]
  ?[x; (sts@base["owner_id"]:id[x]); (sts@base["owner_id"]:id[ce])]} / current stories
-numerals:,/!10,"c"$'97+!6
-hex:{sub[" ";"0"]2!""/"s"$'numerals@16\x}
-rtoh:{[rgb] "#"+""/hex'rgb}
+numerals:,/!10,"c"$'97+!6; hex:{sub[" ";"0"]2!""/"s"$'numerals@16\x}; rtoh:{[rgb] "#"+""/hex'rgb}
 tolbright:rtoh@..[gray:3#187;blue:46 37 133;green:51 117 56;cyan:93 168 153;yellow:148 203 236;pink:220 205 125;purple:194 106 119]
 showpal:{[d]{print'tui.render[x;"WOW "]}'tui.style'{..[Foreground:x]}'tui.color'd;1}
 showpal tolbright
-memepics:{[yearmonthS;yearmonthE;member] / mb epics [yearmonthS,yearmonthE) eg "2024-01"
-  q:..[archived:F;"workflow_state_types":,"done";"owner_id":q.id p.member
+/ All epics a member's stories were a part of, as well as all stories not assigned to an epic.
+mbworkstreams:{[yearmonthS;yearmonthE;member] / [yearmonthS,yearmonthE) eg "2024-01"
+  q:..[archived:-0w;"workflow_state_types":,"done";"owner_id":q.id p.member
        "completed_at_start":"$yearmonthS-01T00:00:00Z";"completed_at_end":"$yearmonthE-01T00:00:00Z"]
-  ss:sts[q]; ids:(..x["epic_id"])'ss; ids:^?(..0n~'p.ids)^ids
+  ss:sts[q]; sids:(..x["epic_id"])'ss; nil:(..0n~'p.sids); inepicids:^?nil^sids; outepics:^?nil#ss
   /epicnames:(..x["name"][0;30]+"...")'epics
-  epics:sc.ep'ids; epicnames:(..name)'epics; epicurls:(..x["app_url"])'epics
-  (!"id name url")!(ids;epicnames;epicurls)}
+  epics:sc.ep'inepicids; epicnames:(..name)'epics; epicurls:(..x["app_url"])'epics; etype:(#inepicids)#"epic"
+  storynames:(..name)'ss; storyurls:(..x["app_url"])'ss; stype:(#outepics)#"story"
+  (!"type id name url")!(etype,stype;inepicids,(..id)'outepics;epicnames,storynames;epicurls,storyurls)}
