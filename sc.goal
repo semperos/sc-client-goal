@@ -1,6 +1,6 @@
 / Until import supports custom extensions on the GOALLIB,
 / user needs to import these themselves.
-/""import"./scapi.ari"; ""import"./scdata.ari"
+""import"sc-client-goal/scapi"; ""import"sc-client-goal/scdata"
 psmb:{p:epr[x]; tl:x["profile";"mention_name"]; "$p (`$tl)"}
 ppsmb:{p:epr[x]; tl:x["profile";"mention_name"]; "$p (`$tl)"}
 shmb:{say psmb[x]}
