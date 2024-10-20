@@ -1,6 +1,6 @@
-# Shortcut API Client using Ari
+# Shortcut API Client using Goal
 
-This repository contains [Ari](https://github.com/semperos/ari) source code for a [Shortcut REST API v3](https://developer.shortcut.com/api/rest/v3) client.
+This repository contains [Goal](https://codeberg.org/anaseto/goal) source code for a [Shortcut REST API v3](https://developer.shortcut.com/api/rest/v3) client, using extensions to Goal provided by [Ari](https://github.com/semperos/ari).
 
 ## Usage
 
@@ -13,19 +13,19 @@ go install github.com/semperos/ari/cmd/ari@latest
 To start a REPL with functions for calling the Shortcut API:
 
 ```shell
-ari -l scapi.ari
+ari -l scapi.goal
 ```
 
-You can also load `scdata.ari` to have your Shortcut workspace's members, groups/teams, workflows, etc. downloaded up front (increases start-up time dramatically):
+You can also load `scdata.goal` to have your Shortcut workspace's members, groups/teams, workflows, etc. downloaded up front (increases start-up time dramatically):
 
 ```shell
-ari -l scapi.ari -l scdata.ari
+ari -l scapi.goal -l scdata.goal
 ```
 
 For one-shot scripts that shouldn't start the REPL, pass your script as a positional argument to the `ari` command:
 
 ```shell
-ari -l scapi.ari your-script.ari
+ari -l scapi.goal your-script.goal
 ```
 
 ## License
