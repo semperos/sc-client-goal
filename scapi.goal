@@ -17,7 +17,7 @@ epr:{et:x[etk]; abb:abbs[et]; i:id[x]; :qq/$abb["$i"]/}
 / TODO Brittle.
 / ari.print:{and[ist x;:fmt.tbl[x;3;3;"%.1f"]]; and["d"=@x;:(?[|/etk=!x;(et:x[etk];say entprstr[x]);say x])]; and["e"=@x;:(say x; say"")]; say $x}
 pp:fmt.tbl[;3;3;"%.1f"]
-ce::0n; cd:{ce::x; (ari.prompt::epr[x]+"> "); x};
+cd:{ari.c::x; (ari.prompt::epr[x]+"> "); x};
 san:{sub[rx/[^a-zA-Z0-9]/;""]x}; jp:{say " "json x}; / sanitize Goal name / print JSON (of ent)
 fetcher:{[abbrev;arg]p:es[abbrev];u:?[""~arg;p;p+"/"+id[arg]];get u}
 poster:{[abbrev;body]b:""json body; u:es[abbrev]; post[u;..[Body:b]]}
