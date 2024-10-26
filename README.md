@@ -2,12 +2,32 @@
 
 This repository contains [Goal](https://codeberg.org/anaseto/goal) source code for a [Shortcut REST API v3](https://developer.shortcut.com/api/rest/v3) client, using extensions to Goal provided by [Ari](https://github.com/semperos/ari).
 
-## Usage
+## Setup
 
 First, install the `ari` command:
 
 ```shell
 go install github.com/semperos/ari/cmd/ari@latest
+```
+
+Make a directory to keep your Goal source code and set it as your `GOALLIB`, for example:
+
+```
+mkdir -p $HOME/Development/goal
+export GOALLIB=$HOME/Development/goal
+```
+
+Now check out this repository in your `GOALLIB` folder:
+
+```
+cd $GOALLIB
+git clone https://github.com/semperos/sc-client-goal sc-client
+```
+
+Finally, ensure your Shortcut API token is set to the `SHORTCUT_API_TOKEN` environment variable. I personally use [direnv](https://github.com/direnv/direnv) + [sops](https://github.com/direnv/direnv) to accomplish this with a local `.envrc` file that looks like:
+
+```
+export SHORCUT_API_TOKEN=$(sops -d --extract '["shortcut"]["token"]' $HOME/.config/credentials.yaml)
 ```
 
 To start a REPL with functions for calling the Shortcut API:
