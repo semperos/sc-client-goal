@@ -16,6 +16,9 @@ mbworkstreams:{[yearmonthS;yearmonthE;member] / [yearmonthS,yearmonthE) eg "2024
        "completed_at_start":"$yearmonthS-01T00:00:00Z";"completed_at_end":"$yearmonthE-01T00:00:00Z"]
   ss:sts[q]; sids:(..x["epic_id"])'ss; nil:(..0n~'p.sids); inepicids:^?nil^sids; outepics:^?nil#ss
   /epicnames:(..x["name"][0;30]+"...")'epics
-  epics:sc.ep'inepicids; epicnames:(..name)'epics; epicurls:(..x["app_url"])'epics; etype:(#inepicids)#"epic"
+  epics:epic.get'inepicids; epicnames:(..name)'epics; epicurls:(..x["app_url"])'epics; etype:(#inepicids)#"epic"
   storynames:(..name)'ss; storyurls:(..x["app_url"])'ss; stype:(#outepics)#"story"
   (!"type id name url")!(etype,stype;inepicids,(..id)'outepics;epicnames,storynames;epicurls,storyurls)}
+ls:{[e]t:et e
+ ?["epic"~t;"EPIC"
+   :error"Can't list children of type {t}"]}
