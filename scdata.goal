@@ -1,12 +1,22 @@
 / DATA FETCH for specific workspace2
-mems:get"members"; grps:get"groups"; wfs:get"workflows"
-wfsts::()!(); {[wf]{[state]wfsts[state"id"]:state}'wf"states"}'wfs / DEF dict from workflow state id to self
-epwf:get"epic-workflow"; epsts:(@[;"id"]'epsts)!epsts:epwf["epic_states"]
-mnames:(..profile["mention_name"])'mems; mnamed:mnames!mems
+cache.members:get"members"; cache.groups:get"groups"; cache.workflows:get"workflows"
+cache.workflowstates::()!()
+{[wf]{[state]cache.workflowstates[state"id"]:state}'wf"states"}'cache.workflows
+cache.epicworkflow:get"epic-workflow"; cache.epicworkflowstates:(@[;"id"]'epsts)!epsts:cache.epicworkflow["epic_states"]
+/ >> DEF mb.* (members) >>
+mnames:(..profile["mention_name"])'cache.members; mnamed:mnames!cache.members
 mnameglobals:{[mname]k:"mb."+san[mname]; v:mnamed[mname]; n:mnamed[mname;"profile";"name"]; help[k;"Member: $n"]; ::[k;v]}
-mnameglobals'mnames / DEF mb. (members)
-mbid:((..id)'mems)!mems
-gnames:(..x["mention_name"])'grps; gnamed:gnames!grps; gnameglobals:{[gname]k:"gr."+san[gname]; v:gnamed[gname]; n:gnamed[gname;"name"]; help[k;"Group/Team: $n"]; ::[k;v]}
+mnameglobals'mnames
+cache.membersbyid:((..id)'cache.members)!cache.members
+/ << DEF mb.* (members) <<
+/ >> DEF gr.* (groups) >>
+gnames:(..x["mention_name"])'cache.groups; gnamed:gnames!cache.groups; gnameglobals:{[gname]k:"gr."+san[gname]; v:gnamed[gname]; n:gnamed[gname;"name"]; help[k;"Group/Team: $n"]; ::[k;v]}
 ign:gnameglobals'gnames / DEF gr. (groups)
-grid:((..id)'grps)!grps
-
+cache.groupsbyid:((..id)'cache.groups)!cache.groups
+/ << DEF gr.* (groups)
+/ Story workflow states
+story.isworkflowstatetype:{[type;st] wfst:st"workflow_state_id";type=cache.workflowstates[wfst]"type"}
+(story.isbacklog;story.isdone;story.isstarted;story.isunstarted):story.isworkflowstatetype'!"backlog done started unstarted"
+/ Epic workflow states
+epic.isworkflowstatetype:{[type;ep] id:ep"epic_state_id"; type=epsts[id]"type"}
+(epic.isdone;epic.isstarted;epic.isunstarted):epic.isworkflowstatetype'!"done started unstarted"

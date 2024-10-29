@@ -4,40 +4,38 @@ aj:"application/json"; hd:..["Shortcut-Token":tok;Accept:aj;"Content-Type":aj]; 
 hp:{[f]{[httpf;path]r: 'httpf[hc;url+path]; 'json r"bodystring"}[f]}
 hpp:{[f]{[httpf;path;reqopts]r: 'httpf[hc;url+path;reqopts]; 'json r"bodystring"}[f]}
 get:hp[http.get]; post:hpp[http.post]; put:hpp[http.put]; browse:{[ent]u:ent"app_url"; shell "open $u"}
-sg:{[s]or[..["stories":"story"]s;-1_s]}; infi:1=sign; / singular, infinity-to-int
+sg:{[s]munge@or[..["stories":"story"]s;-1_s]}; infi:1=sign; / singular, munge + singular, infinity-to-int
 ist:{and["d"=@x;&/"s"=@'!x;&/{(@'x)¿"ANSI"}x;&/(*ls)=ls:#'x]}; mkt:{[D]ks:!*D; ks!+.'D} / is table / mk table
 / Strings
-etk:"entity_type"; ens:!"custom-fields epic-workflows epics groups iterations key-results labels members objectives stories workflows"; es:(!"cf ew ep gr it kr lb mb ob st wf")!ens; abbs:+sg'es
+etk:"entity_type"; ens:!"custom-fields epic-workflows epics groups iterations key-results labels members objectives stories workflows"; es:(!"cf ew ep gr it kr lb mb ob st wf")!ens; abbrevs:+sg'es
+abbrevs
 stsfields:!"archived completed_at_end completed_at_start created_at_end created_at_start deadline_end deadline_start epic_id epic_ids estimate external_id group_id group_ids includes_description iteration_id iteration_ids label_ids label_name owner_id owner_ids project_id project_ids requested_by_id story_type updated_at_end updated_at_start workflow_state_id workflow_state_types"
 idfs:(!"d s n")!({id:x"id";?["s"=@id;id;$"i"$id]};{x};{$"i"$x}); id:{tp:@x; ?[|/tp=!idfs;idfs[tp]x;$x]} / fmt ids
 et:{x[etk]}
 entn:{n:x"name"; ?[n="";x["profile";"name"];n]}
-entprstr:{et:x[etk]; abb:abbs[et]; i:id[x]; n:entn x; "$abb[$i] / $n"}
-epr:{et:x[etk]; abb:abbs[et]; i:id[x]; :qq/$abb["$i"]/}
+typeid:{et:x[etk]; type:munge[et]; i:id[x]; (type;i)}
+epr:{(type;i):typeid x; :qq/$type["$i"]/}
 / TODO Brittle.
+/ entprstr:{(type;id):typeid x; n:entn x; "$name[$i] / $n"}
 / ari.print:{and[ist x;:fmt.tbl[x;3;3;"%.1f"]]; and["d"=@x;:(?[|/etk=!x;(et:x[etk];say entprstr[x]);say x])]; and["e"=@x;:(say x; say"")]; say $x}
 pp:fmt.tbl[;3;3;"%.1f"]
 cd:{ari.c::x; (ari.prompt::epr[x]+"> "); x};
 san:{sub[rx/[^a-zA-Z0-9]/;""]x}; jp:{say " "json x}; / sanitize Goal name / print JSON (of ent)
-fetcher:{[abbrev;arg]p:es[abbrev];u:?[""~arg;p;p+"/"+id[arg]];get u}
+fetcher:{[abbrev;arg]p:es[abbrev];\u:?[""~arg;p;p+"/"+id[arg]];get u}
 poster:{[abbrev;body]b:""json body; u:es[abbrev]; post[u;..[Body:b]]}
 putter:{[abbrev;arg;body]u:es[abbrev]+"/"+id[arg]; b:""json body; ; put[u;..[Body:b]]}
 / TODO Add help for fetcher, putter, poster
-/ TODO Consider st.*, ep.*, instead of everything under sc.*
-{::[x;fetcher[x]]; ::["sc."+x;fetcher[x]]}'!es; / DEF API ent fetchers, w/wout pfx
-{::[x;poster[x]]; ::["sc.create"+x;poster[x]]}'!es; / DEF API ent posters, w/wout pfx
-{::[x;putter[x]]; ::["sc.update"+x;putter[x]]}'!es; / DEF API ent putters, w/wout pfx
-/ DELETE endpoints intentionally unsupported. Archive via PUT as needed.
-sc.member:{get"member"} / token's member
-sc.ws:{(sc.member"")["workspace2";"url_slug"]} / workspace slug
-sth:{[st]i:id[st]; get"stories/$i/history"}
+/ NB: DELETE endpoints intentionally unsupported. Archive via PUT as needed.
+{name:sg@es[x]; ::["${name}.get";fetcher[x]]; ::[name;fetcher[x]]}'!es;
+{name:sg@es[x]; ::["${name}.create";poster[x]]}'!es;
+{name:sg@es[x]; ::["${name}.update";putter[x]]}'!es;
+{name:sg@es[x]; ::["${name}.list";..q.get[p.x]]}'!"cf ep gr it lb mb ob wf" / Listable endpoints
+epicworkflow:{get"epic-workflow"}; epicworkflow.get:{get"epic-workflow"} / Singleton: workflow that epics go through
+member.get:{get"member"} / Singleton: token's member + workspace info
+workspace.get:{(member"")["workspace2";"url_slug"]} / Synthetic singleton: workspace slug
+story.history:{[st]i:id[st]; get"stories/$i/history"}
 / TODO Make sc.q* functions that pluck out IDs from entity args
 stsglobals:{[fld]k:"sts."+san[fld]; ::[k;fld]}; stsglobals'stsfields / DEF story search fields
-sts:{[queryd]body:""json queryd; post["stories/search";..[Body:body]]} / API story search
-itstories:{[it]i:id[it]; get"iterations/$i/stories"}
-lb.put:{[lb;body]i:id lb;b:""json body; put["labels/$i";..[Body:b]]}
-lb.st:{[lb]i:id lb; get"labels/$i/stories"}; lb.ep:{[lb]i:id lb; get"labels/$i/epics"}
-st.wfsttype:{[type;st] wfst:st"workflow_state_id";type=wfsts[wfst]"type"} / expects global wfsts which is in scdata.ari
-st.backlog:st.wfsttype"backlog"; st.done:st.wfsttype"done"; st.started:st.wfsttype"started"; st.unstarted:st.wfsttype"unstarted"
-ep.wfsttype:{[type;ep] id:ep"epic_state_id"; type=epsts[id]"type"} / expects global epsts which is in scdata.ari
-ep.done:ep.wfsttype"done"; ep.started:ep.wfsttype"started"; ep.unstarted:ep.wfsttype"unstarted"
+story.search:{[d]body:""json d; post["stories/search";..[Body:body]]} / API story search
+iteration.stories:{[it]i:id[it]; get"iterations/$i/stories"}
+label.stories:{[lb]i:id lb; get"labels/$i/stories"}; lb.ep:{[lb]i:id lb; get"labels/$i/epics"}
