@@ -30,19 +30,13 @@ Finally, ensure your Shortcut API token is set to the `SHORTCUT_API_TOKEN` envir
 export SHORCUT_API_TOKEN=$(sops -d --extract '["shortcut"]["token"]' $HOME/.config/credentials.yaml)
 ```
 
-To start a REPL with functions for calling the Shortcut API:
+To start interacting with the Shortcut API via Goal, run the following command which will fetch entities from your Shortcut workspace (e.g., workflows, teams & members) and provide a `sc>` prompt when ready:
 
 ```shell
-ari -l scapi.goal
+ari -l sc.goal
 ```
 
-You can also load `scdata.goal` to have your Shortcut workspace's members, groups/teams, workflows, etc. downloaded up front (increases start-up time dramatically):
-
-```shell
-ari -l scapi.goal -l scdata.goal
-```
-
-For one-shot scripts that shouldn't start the REPL, pass your script as a positional argument to the `ari` command:
+For one-shot scripts, use the following (requires you to fetch any entities that you need, see [scdata.goal])
 
 ```shell
 ari -l scapi.goal your-script.goal
