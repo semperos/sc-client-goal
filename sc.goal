@@ -20,5 +20,9 @@ mbworkstreams:{[yearmonthS;yearmonthE;member] / [yearmonthS,yearmonthE) eg "2024
   storynames:(..name)'ss; storyurls:(..x["app_url"])'ss; stype:(#outepics)#"story"
   (!"type id name url")!(etype,stype;inepicids,(..id)'outepics;epicnames,storynames;epicurls,storyurls)}
 ls:{[e]t:et e
- ?["epic"~t;"EPIC"
-   :error"Can't list children of type {t}"]}
+ ?["epic"~t;      epic.stories e;    "iteration"~t; iteration.stories e
+   "group"~t;     group.members e;   "label"~t;     label.stories e
+   "member"~t;    member.stories e;  "milestone"~t; milestone.epics e
+   "objective"~t; objective.epics e; "story"~t;     story.tasks e
+   "workflow"~t;  workflow.states e; :error"Can't list children of type '$t'"]}
+1
