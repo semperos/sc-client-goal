@@ -42,6 +42,65 @@ For one-shot scripts, use the following (requires you to fetch any entities that
 ari -l scapi.goal your-script.goal
 ```
 
+## Gotchas
+
+* Goal deserializes JSON `null` as `0n` which is its NaN value. 
+* Goal deserializes JSON `true` as `0w` which is its positive infinity value.
+* Goal deserializes JSON `false` as `-0w` which is its negative infinity value.
+
+## Examples
+
+**Iteration workstreams**, defined as number of epics + number of stories not in an epic for the last 10 iterations:
+
+```
+import"sc-client/sc"              / Located based on GOALLIB env var
+epid:..x["epic_id"]               / Helper to grab epic id
+repnan:{y[&nan y]:x}              / Helper to replace a NaN value with x
+nanepic:repnan[-1]                / Helper to replace a NaN epic ID with -1
+ittbl:mktbl its:iteration.list""  / Table of all iterations in workspace
+groupits:{[group]                 / Table filtered to iterations for given group (Team)
+ (1;..1~'*'x["group_ids"]=p.group"id";..status="done")#ittbl}
+itnumws:{[its]                    / Num epics + stories wout epic in last 10 iterations
+ its:its[(..>x["end_date"])its]
+ itsdone:its[!10]"id"
+ itss:iteration.stories'itsdone
+ epicfreqs:k.freq'nanepic'epid''itss
+ numepics:-1+#'epicfreqs
+ numnonepic:@[;-1]'epicfreqs
+ numepics + numnonepic
+}
+ac"gr.*"                          / See which teams are defined
+itnumws@groupits gr.yourteamhere  / Report 
+```
+
+**Produce a CSV of labels** that are no longer in use for in-progress work:
+
+```
+import"sc-client/sc"
+say"PLEASE WAIT. Fetching all labels with their stories and/or epics."
+lbs:label""; lbsstories:label.stories'lbs; lbsepics:label.epics'lbs
+nosts:0=#'lbsstories; noeps:0=#'lbsepics
+ALLNONE:lbs@&nosts&noeps
+
+SNONE:lbs[&nosts] / labels with no stories
+ENONE:lbs[&noeps] / labels with no epics
+
+/ TODO can use "completed" field instead
+SDONE:lbs@&1~'{&/x}'story.isdone''lbsstories / labels with stories, all stories done
+EDONE:lbs@&1~'{&/x}'epic.isdone''lbsepics    / labels with epics,   all epics done
+
+ids:@[;"id"]'; seti:{x[&~(#y)=(ids y)?(ids x)]} / set intersection
+ALLDONE:seti[SDONE;EDONE]
+ALLSDONE:seti[SDONE;ENONE]
+ALLEDONE:seti[EDONE;SNONE]
+
+ARCHIVE:,/(ALLNONE;ALLDONE;ALLSDONE;ALLEDONE)
+cols:{A:x[("id";"name";"app_url")];@[A;0;"i"$]}'ARCHIVE
+hd:!"id name app_url"
+t:hd!+cols; t:@[t;"id";"i"$]; t:@[t;"name";rx/\t/ sub " "] / int id; name w/out csv sep
+f:"labels.csv"; f print"\t"csv t; say "Wrote archive-able labels to $f"
+```
+
 ## License
 
 Copyright 2024 Daniel Gregoire
