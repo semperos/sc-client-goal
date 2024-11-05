@@ -36,7 +36,7 @@ To start interacting with the Shortcut API via Goal, run the following command w
 ari -l sc.goal
 ```
 
-For one-shot scripts, use the following (requires you to fetch any entities that you need, see [scdata.goal])
+For one-shot scripts, use the following (requires you to fetch any entities that you need, see [scdata.goal](./scdata.goal))
 
 ```shell
 ari -l scapi.goal your-script.goal
