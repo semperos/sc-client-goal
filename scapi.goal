@@ -41,7 +41,7 @@ story.search:{[d]body:""json d; post["stories/search";..[Body:body]]} / API stor
 story.tasks:{[st]i:id st; st:story i; st"tasks"}
 epic.stories:{[ep]i:id ep; get"epics/$i/stories"}
 iteration.stories:{[it]i:id it; get"iterations/$i/stories"}
-label.stories:{[lb]i:id lb; get"labels/$i/stories"}; lb.ep:{[lb]i:id lb; get"labels/$i/epics"}
+label.stories:{[lb]i:id lb; get"labels/$i/stories"}; label.epics:{[lb]i:id lb; get"labels/$i/epics"}
 member.stories:{[mb]i:id mb; story.search@..["owner_id":i]}
 milestone.epics:{[mi]i:id mi; get"milestones/$i/epics"}
 objective.epics:{[ob]i:id ob; get"objectives/$i/epics"}
