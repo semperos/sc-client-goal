@@ -1,0 +1,870 @@
+/ Persistence to a local DuckDB database
+createtables:rq#
+CREATE TABLE authenticated_member (
+id UUID,
+mention_name VARCHAR,
+name VARCHAR,
+workspace_2_estimate_scale VARCHAR,
+workspace_2_url_slug VARCHAR,
+);
+
+CREATE TABLE category (
+id BIGINT,
+archived BOOLEAN,
+color VARCHAR,
+created_at TIMESTAMPTZ,
+entity_type VARCHAR,
+external_id VARCHAR,
+name VARCHAR,
+type VARCHAR,
+updated_at TIMESTAMPTZ,
+);
+
+CREATE TABLE custom_field (
+id UUID,
+canonical_name VARCHAR,
+created_at TIMESTAMPTZ,
+description VARCHAR,
+enabled BOOLEAN,
+entity_type VARCHAR,
+field_type VARCHAR,
+fixed_position BIGINT,
+icon_set_identifier VARCHAR,
+name VARCHAR,
+position BIGINT,
+updated_at TIMESTAMPTZ,
+);
+
+CREATE TABLE custom_field_value (
+id UUID,
+custom_field_id UUID,
+color_key VARCHAR,
+enabled BOOLEAN,
+entity_type VARCHAR,
+position BIGINT,
+value VARCHAR,
+);
+
+CREATE TABLE entity_template (
+id BIGINT,
+author_id UUID,
+epic_id BIGINT,
+group_id UUID,
+project_id BIGINT,
+workflow_state_id BIGINT,
+created_at TIMESTAMPTZ,
+deadline TIMESTAMPTZ,
+description VARCHAR,
+entity_type VARCHAR,
+estimate VARCHAR,
+external_links VARCHAR,
+last_used_at TIMESTAMPTZ,
+linked_files VARCHAR,
+name VARCHAR,
+story_type VARCHAR,
+updated_at TIMESTAMPTZ,
+custom_var VARCHAR,
+);
+
+CREATE TABLE entity_template_external (
+link VARCHAR,
+entity_template_id BIGINT,
+);
+
+CREATE TABLE entity_template_file (
+entity_template_id BIGINT,
+id BIGINT,
+);
+
+CREATE TABLE entity_template_follower (
+entity_template_id BIGINT,
+id UUID,
+);
+
+CREATE TABLE entity_template_label (
+entity_template_id BIGINT,
+id BIGINT,
+);
+
+CREATE TABLE entity_template_linked_file (
+entity_template_id BIGINT,
+id BIGINT,
+);
+
+CREATE TABLE entity_template_owner (
+entity_template_id BIGINT,
+id UUID,
+);
+
+CREATE TABLE entity_template_task (
+_internal_id BIGINT,
+entity_template_id BIGINT,
+complete BOOLEAN,
+description VARCHAR,
+position BIGINT,
+);
+
+CREATE TABLE epic (
+id BIGINT,
+epic_state_id BIGINT,
+group_id UUID,
+group_mention_id UUID,
+milestone_id BIGINT,
+requested_by_id UUID,
+app_url VARCHAR,
+archived BOOLEAN,
+completed BOOLEAN,
+completed_at TIMESTAMPTZ,
+completed_at_override TIMESTAMPTZ,
+created_at TIMESTAMPTZ,
+deadline TIMESTAMPTZ,
+entity_type VARCHAR,
+external_id VARCHAR,
+global_id VARCHAR,
+name VARCHAR,
+planned_start_date TIMESTAMPTZ,
+position BIGINT,
+productboard_id UUID,
+productboard_name VARCHAR,
+productboard_plugin_id UUID,
+productboard_url VARCHAR,
+started BOOLEAN,
+started_at TIMESTAMPTZ,
+started_at_override TIMESTAMPTZ,
+state VARCHAR,
+stats_average_cycle_time BIGINT,
+stats_average_lead_time BIGINT,
+stats_last_story_update TIMESTAMPTZ,
+stats_num_points BIGINT,
+stats_num_points_backlog BIGINT,
+stats_num_points_done BIGINT,
+stats_num_points_started BIGINT,
+stats_num_points_unstarted BIGINT,
+stats_num_related_documents BIGINT,
+stats_num_stories_backlog BIGINT,
+stats_num_stories_done BIGINT,
+stats_num_stories_started BIGINT,
+stats_num_stories_total BIGINT,
+stats_num_stories_unestimated BIGINT,
+stats_num_stories_unstarted BIGINT,
+stories_without_projects BIGINT,
+updated_at TIMESTAMPTZ,
+);
+
+CREATE TABLE epic_associated_group (
+epic_id BIGINT,
+group_id UUID,
+associated_stories_count BIGINT,
+);
+
+CREATE TABLE epic_comment (
+id BIGINT,
+epic_id BIGINT,
+app_url VARCHAR,
+author_id UUID,
+created_at TIMESTAMPTZ,
+deleted BOOLEAN,
+entity_type VARCHAR,
+external_id VARCHAR,
+group_mention_ids VARCHAR,
+member_mention_ids VARCHAR,
+mention_ids VARCHAR,
+text VARCHAR,
+updated_at TIMESTAMPTZ,
+);
+
+CREATE TABLE epic_label (
+epic_id BIGINT,
+id BIGINT,
+);
+
+CREATE TABLE epic_project (
+epic_id BIGINT,
+id BIGINT,
+);
+
+CREATE TABLE epic_story (
+id BIGINT,
+epic_id BIGINT,
+group_id UUID,
+iteration_id BIGINT,
+project_id BIGINT,
+requested_by_id UUID,
+workflow_id BIGINT,
+workflow_state_id BIGINT,
+app_url VARCHAR,
+archived BOOLEAN,
+blocked BOOLEAN,
+blocker BOOLEAN,
+completed BOOLEAN,
+completed_at TIMESTAMPTZ,
+completed_at_override TIMESTAMPTZ,
+created_at TIMESTAMPTZ,
+cycle_time BIGINT,
+deadline TIMESTAMPTZ,
+entity_type VARCHAR,
+estimate VARCHAR,
+external_id VARCHAR,
+external_links VARCHAR,
+global_id VARCHAR,
+lead_time BIGINT,
+moved_at TIMESTAMPTZ,
+name VARCHAR,
+num_tasks_completed BIGINT,
+position BIGINT,
+started BOOLEAN,
+started_at TIMESTAMPTZ,
+started_at_override TIMESTAMPTZ,
+stats_num_related_documents BIGINT,
+story_links VARCHAR,
+story_template_id BIGINT,
+story_type VARCHAR,
+updated_at TIMESTAMPTZ,
+);
+
+CREATE TABLE epic_story_comment (
+epic_story_id BIGINT,
+id BIGINT,
+);
+
+CREATE TABLE epic_story_custom_field (
+id UUID,
+story_id BIGINT,
+value_id UUID,
+);
+
+CREATE TABLE epic_story_file (
+epic_story_id BIGINT,
+id BIGINT,
+);
+
+CREATE TABLE epic_story_follower (
+epic_story_id BIGINT,
+id UUID,
+);
+
+CREATE TABLE epic_story_group_mention (
+epic_story_id BIGINT,
+id UUID,
+);
+
+CREATE TABLE epic_story_label (
+epic_story_id BIGINT,
+id BIGINT,
+);
+
+CREATE TABLE epic_story_linked_file (
+epic_story_id BIGINT,
+id BIGINT,
+);
+
+CREATE TABLE epic_story_member_mention (
+epic_story_id BIGINT,
+id UUID,
+);
+
+CREATE TABLE epic_story_mention (
+epic_story_id BIGINT,
+id UUID,
+);
+
+CREATE TABLE epic_story_owner (
+epic_story_id BIGINT,
+id UUID,
+);
+
+CREATE TABLE epic_story_previous_iteration (
+epic_story_id BIGINT,
+id BIGINT,
+);
+
+CREATE TABLE epic_story_task (
+id BIGINT,
+epic_story_id BIGINT,
+);
+
+CREATE TABLE epic_workflow (
+id BIGINT,
+default_epic_state_id BIGINT,
+created_at TIMESTAMPTZ,
+entity_type VARCHAR,
+updated_at TIMESTAMPTZ,
+);
+
+CREATE TABLE epic_workflow_state (
+id BIGINT,
+epic_workflow_id BIGINT,
+created_at TIMESTAMPTZ,
+description VARCHAR,
+entity_type VARCHAR,
+global_id VARCHAR,
+name VARCHAR,
+position BIGINT,
+type VARCHAR,
+updated_at TIMESTAMPTZ,
+);
+
+CREATE TABLE external_link_stories (
+id BIGINT,
+entity_template_external_link VARCHAR,
+created_at TIMESTAMPTZ,
+entity_type VARCHAR,
+external_id VARCHAR,
+full_name VARCHAR,
+name VARCHAR,
+type VARCHAR,
+updated_at TIMESTAMPTZ,
+url VARCHAR,
+);
+
+CREATE TABLE external_story_link (
+id BIGINT,
+external_link_stories_id BIGINT,
+created_at TIMESTAMPTZ,
+entity_type VARCHAR,
+object_id BIGINT,
+subject_id BIGINT,
+subject_workflow_state_id BIGINT,
+type VARCHAR,
+updated_at TIMESTAMPTZ,
+verb VARCHAR,
+);
+
+CREATE TABLE file (
+id BIGINT,
+uploader_id UUID,
+content_type VARCHAR,
+created_at TIMESTAMPTZ,
+description VARCHAR,
+entity_type VARCHAR,
+external_id VARCHAR,
+filename VARCHAR,
+name VARCHAR,
+size BIGINT,
+thumbnail_url VARCHAR,
+updated_at TIMESTAMPTZ,
+url VARCHAR,
+);
+
+CREATE TABLE file_group_mention (
+file_id BIGINT,
+id UUID,
+);
+
+CREATE TABLE file_member_mention (
+file_id BIGINT,
+id UUID,
+);
+
+CREATE TABLE file_mention (
+file_id BIGINT,
+id UUID,
+);
+
+CREATE TABLE group_workflow (
+groups_id UUID,
+id BIGINT,
+);
+
+CREATE TABLE group_workspace_member (
+groups_id UUID,
+id UUID,
+);
+
+CREATE TABLE groups (
+id UUID,
+app_url VARCHAR,
+archived BOOLEAN,
+color VARCHAR,
+color_key VARCHAR,
+description VARCHAR,
+display_icon_created_at TIMESTAMPTZ,
+display_icon_entity_type VARCHAR,
+display_icon_id VARCHAR,
+display_icon_updated_at TIMESTAMPTZ,
+display_icon_url VARCHAR,
+entity_type VARCHAR,
+global_id VARCHAR,
+mention_name VARCHAR,
+name VARCHAR,
+num_epics_started BIGINT,
+num_stories BIGINT,
+num_stories_backlog BIGINT,
+num_stories_started BIGINT,
+);
+
+CREATE TABLE iteration (
+id BIGINT,
+group_mention_ids VARCHAR,
+app_url VARCHAR,
+created_at TIMESTAMPTZ,
+end_date DATE,
+entity_type VARCHAR,
+global_id VARCHAR,
+name VARCHAR,
+start_date DATE,
+stats_num_epics BIGINT,
+stats_num_epics_completed BIGINT,
+stats_num_epics_in_progress BIGINT,
+stats_num_epics_total BIGINT,
+stats_num_epics_unstarted BIGINT,
+stats_num_points_backlog BIGINT,
+stats_num_points_completed BIGINT,
+stats_num_points_in_progress BIGINT,
+stats_num_points_total BIGINT,
+stats_num_points_unstarted BIGINT,
+stats_num_related_documents BIGINT,
+stats_num_stories_backlog BIGINT,
+stats_num_stories_completed BIGINT,
+stats_num_stories_in_progress BIGINT,
+stats_num_stories_total BIGINT,
+stats_num_stories_unestimated BIGINT,
+stats_num_stories_unstarted BIGINT,
+status VARCHAR,
+updated_at TIMESTAMPTZ,
+);
+
+CREATE TABLE iteration_associated_group (
+group_id UUID,
+iteration_id BIGINT,
+associated_stories_count BIGINT,
+);
+
+CREATE TABLE iteration_follower (
+iteration_id BIGINT,
+workspace_member_id UUID,
+);
+
+CREATE TABLE iteration_group (
+group_id UUID,
+iteration_id BIGINT,
+);
+
+CREATE TABLE iteration_label (
+iteration_id BIGINT,
+label_id BIGINT,
+);
+
+CREATE TABLE iteration_member_mention (
+id UUID,
+iteration_id BIGINT,
+);
+
+CREATE TABLE iteration_mention (
+id UUID,
+iteration_id UUID,
+);
+
+CREATE TABLE label (
+id BIGINT,
+app_url VARCHAR,
+archived BOOLEAN,
+color VARCHAR,
+created_at TIMESTAMPTZ,
+description VARCHAR,
+entity_type VARCHAR,
+external_id VARCHAR,
+global_id VARCHAR,
+name VARCHAR,
+stats_num_epics BIGINT,
+stats_num_epics_completed BIGINT,
+stats_num_epics_in_progress BIGINT,
+stats_num_epics_total BIGINT,
+stats_num_epics_unstarted BIGINT,
+stats_num_points_backlog BIGINT,
+stats_num_points_completed BIGINT,
+stats_num_points_in_progress BIGINT,
+stats_num_points_total BIGINT,
+stats_num_points_unstarted BIGINT,
+stats_num_related_documents BIGINT,
+stats_num_stories_backlog BIGINT,
+stats_num_stories_completed BIGINT,
+stats_num_stories_in_progress BIGINT,
+stats_num_stories_total BIGINT,
+stats_num_stories_unestimated BIGINT,
+stats_num_stories_unstarted BIGINT,
+updated_at TIMESTAMPTZ,
+);
+
+CREATE TABLE linked_file (
+id BIGINT,
+uploader_id UUID,
+content_type VARCHAR,
+created_at TIMESTAMPTZ,
+description VARCHAR,
+entity_type VARCHAR,
+name VARCHAR,
+size BIGINT,
+thumbnail_url VARCHAR,
+type VARCHAR,
+updated_at TIMESTAMPTZ,
+url VARCHAR,
+);
+
+CREATE TABLE linked_file_group_mention (
+group_mention_id UUID,
+linked_file_id BIGINT,
+);
+
+CREATE TABLE linked_file_member_mention (
+id UUID,
+linked_file_id BIGINT,
+);
+
+CREATE TABLE linked_file_mention (
+id UUID,
+linked_file_id BIGINT,
+);
+
+CREATE TABLE milestone (
+id BIGINT,
+app_url VARCHAR,
+archived BOOLEAN,
+completed BOOLEAN,
+completed_at TIMESTAMPTZ,
+completed_at_override TIMESTAMPTZ,
+created_at TIMESTAMPTZ,
+description VARCHAR,
+entity_type VARCHAR,
+global_id VARCHAR,
+name VARCHAR,
+position BIGINT,
+started BOOLEAN,
+started_at TIMESTAMPTZ,
+started_at_override TIMESTAMPTZ,
+state VARCHAR,
+stats_average_cycle_time BIGINT,
+stats_average_lead_time BIGINT,
+stats_num_related_documents BIGINT,
+updated_at TIMESTAMPTZ,
+);
+
+CREATE TABLE milestone_category (
+id BIGINT,
+milestone_id BIGINT,
+);
+
+CREATE TABLE project (
+id BIGINT,
+team_id BIGINT,
+workflow_id BIGINT,
+abbreviation VARCHAR,
+app_url VARCHAR,
+archived BOOLEAN,
+color VARCHAR,
+created_at TIMESTAMPTZ,
+days_to_thermometer BIGINT,
+description VARCHAR,
+entity_type VARCHAR,
+external_id VARCHAR,
+iteration_length BIGINT,
+name VARCHAR,
+show_thermometer BOOLEAN,
+start_time TIMESTAMPTZ,
+stats_num_points BIGINT,
+stats_num_related_documents BIGINT,
+stats_num_stories BIGINT,
+updated_at TIMESTAMPTZ,
+);
+
+CREATE TABLE project_follower (
+project_id BIGINT,
+workspace_member_id UUID,
+);
+
+CREATE TABLE repository (
+id BIGINT,
+created_at TIMESTAMPTZ,
+entity_type VARCHAR,
+external_id VARCHAR,
+full_name VARCHAR,
+name VARCHAR,
+type VARCHAR,
+updated_at TIMESTAMPTZ,
+url VARCHAR,
+);
+
+CREATE TABLE story (
+id BIGINT,
+epic_id BIGINT,
+group_id UUID,
+iteration_id BIGINT,
+label_id BIGINT,
+project_id BIGINT,
+requested_by_id UUID,
+workflow_id BIGINT,
+workflow_state_id BIGINT,
+app_url VARCHAR,
+archived BOOLEAN,
+blocked BOOLEAN,
+blocker BOOLEAN,
+completed BOOLEAN,
+completed_at TIMESTAMPTZ,
+completed_at_override TIMESTAMPTZ,
+created_at TIMESTAMPTZ,
+cycle_time BIGINT,
+deadline TIMESTAMPTZ,
+entity_type VARCHAR,
+estimate VARCHAR,
+external_id VARCHAR,
+external_links VARCHAR,
+lead_time BIGINT,
+moved_at TIMESTAMPTZ,
+name VARCHAR,
+position BIGINT,
+started BOOLEAN,
+started_at TIMESTAMPTZ,
+started_at_override TIMESTAMPTZ,
+stats VARCHAR,
+story_links VARCHAR,
+story_template_id BIGINT,
+story_type VARCHAR,
+synced_item_external_id VARCHAR,
+synced_item_url VARCHAR,
+updated_at TIMESTAMPTZ,
+);
+
+
+CREATE TABLE story_branch (
+id BIGINT,
+repository_id BIGINT,
+story_id BIGINT,
+created_at TIMESTAMPTZ,
+deleted BOOLEAN,
+entity_type VARCHAR,
+merged_branch_ids VARCHAR,
+name VARCHAR,
+persistent BOOLEAN,
+updated_at TIMESTAMPTZ,
+url VARCHAR,
+);
+
+CREATE TABLE story_branch_pr (
+id BIGINT,
+repository_id BIGINT,
+story_branch_id BIGINT,
+branch_id BIGINT,
+branch_name VARCHAR,
+closed BOOLEAN,
+created_at TIMESTAMPTZ,
+draft BOOLEAN,
+entity_type VARCHAR,
+has_overlapping_stories BOOLEAN,
+merged BOOLEAN,
+num_added BIGINT,
+num_commits BIGINT,
+num_modified BIGINT,
+num_removed BIGINT,
+number BIGINT,
+overlapping_stories VARCHAR,
+review_status VARCHAR,
+target_branch_id BIGINT,
+target_branch_name VARCHAR,
+title VARCHAR,
+updated_at TIMESTAMPTZ,
+url VARCHAR,
+);
+
+CREATE TABLE story_branch_pr_vcs_label (
+id BIGINT,
+story_branch_pr_id BIGINT,
+color VARCHAR,
+description VARCHAR,
+entity_type VARCHAR,
+name VARCHAR,
+);
+
+CREATE TABLE story_comment (
+id BIGINT,
+author_id UUID,
+parent_id BIGINT,
+story_id BIGINT,
+app_url VARCHAR,
+blocker BOOLEAN,
+created_at TIMESTAMPTZ,
+deleted BOOLEAN,
+entity_type VARCHAR,
+external_id VARCHAR,
+position BIGINT,
+text VARCHAR,
+unblocks_parent BOOLEAN,
+updated_at TIMESTAMPTZ,
+);
+
+CREATE TABLE story_comment_group_mention (
+id UUID,
+story_comment_id BIGINT,
+);
+
+CREATE TABLE story_comment_member_mention (
+id UUID,
+story_comment_id BIGINT,
+);
+
+CREATE TABLE story_comment_mention (
+id UUID,
+story_comment_id BIGINT,
+);
+
+CREATE TABLE story_commit (
+id BIGINT,
+author_id UUID,
+repository_id BIGINT,
+story_id BIGINT,
+author_email VARCHAR,
+author_identity_entity_type VARCHAR,
+author_identity_name VARCHAR,
+author_identity_type VARCHAR,
+created_at TIMESTAMPTZ,
+entity_type VARCHAR,
+hash VARCHAR,
+message VARCHAR,
+timestamps VARCHAR,
+updated_at TIMESTAMPTZ,
+url VARCHAR,
+);
+
+CREATE TABLE story_custom_field (
+id UUID,
+story_id BIGINT,
+value_id UUID,
+);
+
+CREATE TABLE story_file (
+id BIGINT,
+story_id BIGINT,
+);
+
+CREATE TABLE story_label (
+id BIGINT,
+story_id BIGINT,
+);
+
+CREATE TABLE story_linked_file (
+id BIGINT,
+story_id BIGINT,
+);
+
+CREATE TABLE story_owner (
+id UUID,
+story_id BIGINT,
+);
+
+CREATE TABLE story_task (
+id BIGINT,
+story_id BIGINT,
+complete BOOLEAN,
+completed_at TIMESTAMPTZ,
+created_at TIMESTAMPTZ,
+description VARCHAR,
+entity_type VARCHAR,
+external_id VARCHAR,
+position BIGINT,
+updated_at TIMESTAMPTZ,
+);
+
+CREATE TABLE story_task_group_mention (
+id UUID,
+story_task_id BIGINT,
+);
+
+CREATE TABLE story_task_member_mention (
+id UUID,
+story_task_id BIGINT,
+);
+
+CREATE TABLE story_task_mention (
+id UUID,
+story_task_id BIGINT,
+);
+
+CREATE TABLE story_task_owner (
+id UUID,
+story_task_id BIGINT,
+);
+
+CREATE TABLE workflow (
+id BIGINT,
+default_state_id BIGINT,
+project_id BIGINT,
+team_id BIGINT,
+auto_assign_owner BOOLEAN,
+created_at TIMESTAMPTZ,
+description VARCHAR,
+entity_type VARCHAR,
+name VARCHAR,
+updated_at TIMESTAMPTZ,
+);
+
+CREATE TABLE workflow_state (
+id BIGINT,
+workflow_id BIGINT,
+created_at TIMESTAMPTZ,
+description VARCHAR,
+entity_type VARCHAR,
+global_id VARCHAR,
+name VARCHAR,
+num_stories BIGINT,
+num_story_templates BIGINT,
+position BIGINT,
+type VARCHAR,
+updated_at TIMESTAMPTZ,
+verb VARCHAR,
+);
+
+CREATE TABLE workspace_member (
+id UUID,
+created_at TIMESTAMPTZ,
+created_without_invite BOOLEAN,
+disabled BOOLEAN,
+entity_type VARCHAR,
+global_id VARCHAR,
+profile_deactivated BOOLEAN,
+profile_display_icon_created_at TIMESTAMPTZ,
+profile_display_icon_entity_type VARCHAR,
+profile_display_icon_id UUID,
+profile_display_icon_updated_at TIMESTAMPTZ,
+profile_display_icon_url VARCHAR,
+profile_email_address VARCHAR,
+profile_entity_type VARCHAR,
+profile_gravatar_hash VARCHAR,
+profile_id BIGINT,
+profile_is_owner BOOLEAN,
+profile_mention_name VARCHAR,
+profile_name VARCHAR,
+profile_two_factor_auth_activated BOOLEAN,
+role VARCHAR,
+state VARCHAR,
+updated_at TIMESTAMPTZ,
+);
+
+CREATE TABLE workspace_member_group (
+group_id UUID,
+workspace_member_id UUID,
+);
+#
+sql.exec createtables
+sql.q "show tables"
+""import"sc-client/sc"
+sch:sql.q "describe story"
+cols:sch"column_name"
+es:epic""
+ess:epic.stories'es
+ss:,/ess
+sql.str:{
+ ?[nan x;"NULL"
+   0w~x;"true"
+   -0w~x;"false"
+   "s"=@x;[s:sub["'";"''"]"s"$x; "'$s'"]
+   islst x;[s:$x; "'$s'"]
+   "d" x;[s:$x; "'$s'"]
+   $x]}
+sql.insert:{[tname;cols;vslists]
+ colspec:","/cols; valspecs:{s:","/sql.str'x; "($s)"}'vslists
+ qq/INSERT INTO $tname ($colspec) VALUES $valspecs ;/ }
+insertion:"\n"/{[s]sql.insert["story";cols;,(..p.s[x])'cols]}'ss
+sql.exec insertion
+sql.q"select count(*) from story"
+(..x["label_id"])@*ss
+say " "json *ss
+cols
