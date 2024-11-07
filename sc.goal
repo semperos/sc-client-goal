@@ -1,10 +1,11 @@
 ""import"sc-client/scapi"; ""import"sc-client/scdata"
-psmb:{p:epr[x]; tl:x["profile";"mention_name"]; "$p (`$tl)"}
-ppsmb:{p:epr[x]; tl:x["profile";"mention_name"]; "$p (`$tl)"}
-shmb:{say psmb[x]}
-show:{[ent]tp:et[ent];
- ks:?[tp="member";]
-  fmt.dict[ent[!#*ent;!"name id"];"%.2f"]}
+member.pstr:{p:epr x; mention:x["profile";"mention_name"]; "$p / $mention"}
+default.pstr:{p:epr x; n:x"name"; "$p / $n"}
+pstr:{[e]t:et e
+ ?["member"~t;member.pstr e
+   default.pstr e]}
+pp:{say pstr x}
+jj:{say" "json x}
 cs:{base:..[archived:-0w;"workflow_state_types":!"backlog unstarted started"]
  ?[x; (sts@base["owner_id"]:id[x]); (sts@base["owner_id"]:id[ari.c])]} / current stories
 numerals:,/!10,"c"$'97+!6; hex:{sub[" ";"0"]2!""/"s"$'numerals@16\x}; rtoh:{[rgb] "#"+""/hex'rgb}
@@ -26,3 +27,4 @@ ls:{[e]t:et e
    "objective"~t; objective.epics e; "story"~t;     story.tasks e
    "workflow"~t;  workflow.states e; :error"Can't list children of type '$t'"]}
 1
+
