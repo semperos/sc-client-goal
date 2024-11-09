@@ -1,8 +1,10 @@
 / DATA FETCH for specific workspace2
-cache.members:get"members"; cache.groups:get"groups"; cache.workflows:get"workflows"
-cache.workflowstates::()!()
-{[wf]{[state]cache.workflowstates[state"id"]:state}'wf"states"}'cache.workflows
-cache.epicworkflow:get"epic-workflow"; cache.epicworkflowstates:(@[;"id"]'epsts)!epsts:cache.epicworkflow["epic_states"]
+cache.refresh:{
+ cache.members::get"members"; cache.groups::get"groups"; cache.workflows::get"workflows"
+ cache.workflowstates::()!()
+ {[wf]{[state]cache.workflowstates[state"id"]:state}'wf"states"}'cache.workflows
+ cache.epicworkflow::get"epic-workflow"; cache.epicworkflowstates::(@[;"id"]'epsts)!epsts:cache.epicworkflow["epic_states"]}
+cache.refresh""
 / >> DEF mb.* (members) >>
 mnames:(..profile["mention_name"])'cache.members; mnamed:mnames!cache.members
 mnameglobals:{[mname]k:"mb."+san[mname]; v:mnamed[mname]; n:mnamed[mname;"profile";"name"]; help[k;"Member: $n"]; ::[k;v]}
