@@ -1,44 +1,27 @@
 ""import"sc-client/scapi"; ""import"sc-client/scdata"
-numerals:,/!10,"c"$'97+!6; hex:{sub[" ";"0"]2!""/"s"$'numerals@16\x}; rtoh:{[rgb] "#"+""/hex'rgb}
-tolbright:rtoh@..[gray:3#187;blue:46 37 133;green:51 117 56;cyan:93 168 153;yellow:148 203 236;pink:220 205 125;purple:194 106 119]
-entpalette:(sg'sc.ents)!(#sc.ents)#.1_tolbright / entity_type to color
-member.pstr:{p:epr x; mention:x["profile";"mention_name"]; "$p / $mention"}
-currentmember.pstr:{i:id x; mention:x["mention_name"]; qq#member["$i"] / $mention#}
-default.pstr:{p:epr x; n:x"name"; "$p / $n"}
+entpal:..["custom-field":"#df8632";"epic-workflow":"#97c6e8";"epic":"#71b259";"group":"#d96e7b";"iteration":"#3895c9";"key-result":"#71b259";"label":"#ad9865";"member":"#8bb771";"objective":"#df8632";"story":"#ad87f3";"workflow":"#97c6e8";"bug":"#e75569";"chore":"#3895c9";"done":"#71b259";"error":"#e75569";"feature":"#e6d566";"info":"#71b259";"prompt":"#58b1e4";"role.admin":"#e6d566";"role.member":"#3a95c9";"role.observer":"#8c8d8c";"role.owner":"#e75569";"started":"#ad87f3";"task":"#3a95c9";"title":"#97c6e8";"subdued":"#575858";"unstarted":"#e75569";"warn":"#e6d566";"_fallback":"#8c8d8c"]
+fg:{[colorstr;s]tc:tui.color colorstr; ty:tui.style ..[Foreground:p.tc]; tui.render[ty;s]};"fg"help"Render s with Foreground color s"
+colorent:{s: epr x; t:et x; c:entpal@et x; fg[c;s]}
+trunc:{?[31<""#x;x[0;30]+"...";x]}
+member.pstr:{p:colorent x; m:member.mention x; "$p / $m"}
+currentmember.pstr:{i:id x; m:x["mention_name"]; qq#member["$i"] / $m#}
+storytypes:..[feature:"Ftr";bug:"Bug";chore:"Chr"]
+say story.pstr story[33]
+story.pstr:{
+  form:colorent x; (a;e;n;t;w):x[!"archived estimate name story_type workflow_state_id"]
+  archived:?[a;fg[entpal"error";"[ARCHIVED] "];""]
+  type:storytypes[t]; type:"[$type]"; type:fg[entpal t;type]
+  name:trunc n; est:?[e;"[$e]";"[_]"]; est:fg[entpal"done";est]
+  "$form / ${archived}${type}${est} $name"}
+st:story"33"
+default.pstr:{p:colorent x; n:x"name"; "$p / $n"}
 tcurrentmember:{[e]*/(#e)>(!e)?!"mention_name workspace2"}
 pstr:{[e]t:et e
  ?["member"~t;member.pstr e
    ""~t;?[tcurrentmember e;currentmember.pstr e;[s:$e; :error"Don't know how to print entity $s"]]
    default.pstr e]}
-pp:say pstr@
-jj:say" "json
-current:{base:..[archived:-0w;"workflow_state_types":!"backlog unstarted started"]
- ?[x; (sts@base["owner_id"]:id[x]); (sts@base["owner_id"]:id[ari.c])]} / current stories
-/ All epics a member's stories were a part of, as well as all stories not assigned to an epic.
-mbworkstreams:{[yearmonthS;yearmonthE;member] / [yearmonthS,yearmonthE) eg "2024-01"
-  q:..[archived:-0w;"workflow_state_types":,"done";"owner_id":q.id p.member
-       "completed_at_start":"$yearmonthS-01T00:00:00Z";"completed_at_end":"$yearmonthE-01T00:00:00Z"]
-  ss:sts[q]; sids:(..x["epic_id"])'ss; nil:(..0n~'p.sids); inepicids:^?nil^sids; outepics:^?nil#ss
-  /epicnames:(..x["name"][0;30]+"...")'epics
-  epics:epic.get'inepicids; epicnames:(..name)'epics; epicurls:(..x["app_url"])'epics; etype:(#inepicids)#"epic"
-  storynames:(..name)'ss; storyurls:(..x["app_url"])'ss; stype:(#outepics)#"story"
-  (!"type id name url")!(etype,stype;inepicids,(..id)'outepics;epicnames,storynames;epicurls,storyurls)}
-ls:{[e]t:et e
- ?["epic"~t;      epic.stories e;    "iteration"~t; iteration.stories e
-   "group"~t;     group.members e;   "label"~t;     label.stories e
-   "member"~t;    member.stories e;  "milestone"~t; milestone.epics e
-   "objective"~t; objective.epics e; "story"~t;     story.tasks e
-   "workflow"~t;  workflow.states e; :error"Can't list children of type '$t'"]}
+pp:{say pstr x} / TODO Accept array of ents / Tacit pp:say pstr@
 ll:pp'ls@
-whoami:{pp@member.get""}
-/ cd overriding with color output
-colorprompt:{
- entstr: epr x; entcolor:tui.color entpalette@et x; sy:tui.style[..[Foreground:p.entcolor]]; r:tui.render[sy;entstr]
- ari.prompt::r+"> "}
-cd:{ari.c::x
- ?[x;colorprompt x;ari.prompt::prompt]
- 1};
+colorprompt:{ari.prompt::colorent[x]+"> "}
+cd:{ari.c::x; ?[x;colorprompt x;ari.prompt::prompt]; 1};
 1
-
-cd@iteration 29
-cd@story 30
