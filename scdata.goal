@@ -3,7 +3,8 @@ cache.refresh:{
  cache.members::get"members"; cache.groups::get"groups"; cache.workflows::get"workflows"
  cache.workflowstates::()!()
  {[wf]{[state]cache.workflowstates[state"id"]:state}'wf"states"}'cache.workflows
- cache.epicworkflow::get"epic-workflow"; cache.epicworkflowstates::(@[;"id"]'epsts)!epsts:cache.epicworkflow["epic_states"]}
+ cache.epicworkflow::get"epic-workflow"; cache.epicworkflowstates::(@[;"id"]'epsts)!epsts:cache.epicworkflow["epic_states"]
+ 1}
 cache.refresh""
 / >> DEF mb.* (members) >>
 mnames:(..profile["mention_name"])'cache.members; mnamed:mnames!cache.members

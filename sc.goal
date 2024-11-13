@@ -1,27 +1,54 @@
 ""import"sc-client/scapi"; ""import"sc-client/scdata"
-entpal:..["custom-field":"#df8632";"epic-workflow":"#97c6e8";"epic":"#71b259";"group":"#d96e7b";"iteration":"#3895c9";"key-result":"#71b259";"label":"#ad9865";"member":"#8bb771";"objective":"#df8632";"story":"#ad87f3";"workflow":"#97c6e8";"bug":"#e75569";"chore":"#3895c9";"done":"#71b259";"error":"#e75569";"feature":"#e6d566";"info":"#71b259";"prompt":"#58b1e4";"role.admin":"#e6d566";"role.member":"#3a95c9";"role.observer":"#8c8d8c";"role.owner":"#e75569";"started":"#ad87f3";"task":"#3a95c9";"title":"#97c6e8";"subdued":"#575858";"unstarted":"#e75569";"warn":"#e6d566";"_fallback":"#8c8d8c"]
+entpal:..["backlog":"#8c8d8c";"custom-field":"#df8632";"done":"#71b259";"epic-workflow":"#97c6e8";"epic":"#71b259";"group":"#d96e7b";"iteration":"#3895c9";"key-result":"#71b259";"label":"#ad9865";"member":"#8bb771";"objective":"#df8632";"story":"#ad87f3";"workflow":"#97c6e8";"bug":"#e75569";"chore":"#3895c9";"done":"#71b259";"error":"#e75569";"feature":"#e6d566";"info":"#71b259";"prompt":"#58b1e4";"role.admin":"#e6d566";"role.member":"#3a95c9";"role.observer":"#8c8d8c";"role.owner":"#e75569";"started":"#ad87f3";"task":"#3a95c9";"title":"#97c6e8";"subdued":"#575858";"unstarted":"#e75569";"warn":"#e6d566";"_fallback":"#8c8d8c"]
 fg:{[colorstr;s]tc:tui.color colorstr; ty:tui.style ..[Foreground:p.tc]; tui.render[ty;s]};"fg"help"Render s with Foreground color s"
 colorent:{s: epr x; t:et x; c:entpal@et x; fg[c;s]}
 trunc:{?[31<""#x;x[0;30]+"...";x]}
 member.pstr:{p:colorent x; m:member.mention x; "$p / $m"}
 currentmember.pstr:{i:id x; m:x["mention_name"]; qq#member["$i"] / $m#}
 storytypes:..[feature:"Ftr";bug:"Bug";chore:"Chr"]
-say story.pstr story[33]
+renderar:{[archived] ?[archived;fg[entpal"error";"[ARCHIVED] "];""]}
+renderwf:{[wfst]
+  (wname;wtype):wfst[!"name type"]; wtypeabb:uc *""\wtype
+  fg[entpal[_wtype];"[$wtypeabb:$wname]"]}
+(..name)'cache.epicworkflowstates
 story.pstr:{
-  form:colorent x; (a;e;n;t;w):x[!"archived estimate name story_type workflow_state_id"]
-  archived:?[a;fg[entpal"error";"[ARCHIVED] "];""]
-  type:storytypes[t]; type:"[$type]"; type:fg[entpal t;type]
-  name:trunc n; est:?[e;"[$e]";"[_]"]; est:fg[entpal"done";est]
-  "$form / ${archived}${type}${est} $name"}
+  form:colorent x; (a;e;n;t;wfsid):x[!"archived estimate name story_type workflow_state_id"]
+  archived:renderar[a]
+  type:storytypes[t]; type:fg[entpal t;"[$type]"]; name:trunc n
+  e:?[nan e;"_";"%0.f"$e]; est:"[$e]"; est:fg[entpal"done";est]
+  wfstate:wfrender[cache.workflowstates wfsid]
+  "$form / ${archived}${type}${est}${wfstate} $name"}
+epic.pstr:{
+  form:colorent x; (a;n;s;wfsid):x[!"archived name state epic_state_id"]
+  archived:renderar[a]; name:trunc n
+  wfstate:renderwf[cache.epicworkflowstates wfsid]
+  "$form / ${archived}${wfstate} $name"}
+/
+ac"cache*"
+cache.epicworkflow
+eps:epic""
+ep:*eps
+ep
+pp@ep
+ep"state"
+ess:epic.stories'eps
+pp''ess
 st:story"33"
+cache.epicworkflow"epic_states"
+cache.refresh""
+\
 default.pstr:{p:colorent x; n:x"name"; "$p / $n"}
 tcurrentmember:{[e]*/(#e)>(!e)?!"mention_name workspace2"}
 pstr:{[e]t:et e
  ?["member"~t;member.pstr e
    ""~t;?[tcurrentmember e;currentmember.pstr e;[s:$e; :error"Don't know how to print entity $s"]]
+   "story"~t;story.pstr e
+   "epic"~t;epic.pstr e
    default.pstr e]}
 pp:{say pstr x} / TODO Accept array of ents / Tacit pp:say pstr@
-ll:pp'ls@
+ll:{pp'ls x} / Tacit pp'ls@
 colorprompt:{ari.prompt::colorent[x]+"> "}
 cd:{ari.c::x; ?[x;colorprompt x;ari.prompt::prompt]; 1};
 1
+
+
