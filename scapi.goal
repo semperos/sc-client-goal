@@ -21,7 +21,6 @@ san:{sub[rx/[^a-zA-Z0-9]/;""]x}; jp:{say " "json x}; / sanitize Goal name / prin
 fetcher:{[path;arg]u:?[""~arg;path;path+"/"+id[arg]];get u}
 poster:{[path;body]b:""json body; post[path;..[Body:b]]}
 putter:{[path;arg;body]u:path+"/"+id[arg]; b:""json body; put[u;..[Body:b]]}
-/ TODO Add help for fetcher, putter, poster
 / NB: DELETE endpoints intentionally unsupported. Archive via PUT as needed.
 {name:sgmg x; ::["${name}.get";fetcher[x]]; ::[name;fetcher[x]]}'sc.ents
 {name:sgmg x; ::["${name}.create";poster[x]]}'sc.ents

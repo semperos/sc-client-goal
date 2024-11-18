@@ -1,4 +1,4 @@
-""import"sc-client/scapi"; ""import"sc-client/scdata"
+""import"sc-client/scapi"; ""import"sc-client/scdata"; ""import"sc-client/schelp"
 entpal:..["backlog":"#8c8d8c";"custom-field":"#df8632";"done":"#71b259";"epic-workflow":"#97c6e8";"epic":"#71b259";"group":"#d96e7b";"iteration":"#3895c9";"key-result":"#71b259";"label":"#ad9865";"member":"#8bb771";"objective":"#df8632";"story":"#ad87f3";"workflow":"#97c6e8";"bug":"#e75569";"chore":"#3895c9";"done":"#71b259";"error":"#e75569";"feature":"#e6d566";"info":"#71b259";"prompt":"#58b1e4";"role.admin":"#e6d566";"role.member":"#3a95c9";"role.observer":"#8c8d8c";"role.owner":"#e75569";"started":"#ad87f3";"task":"#3a95c9";"title":"#97c6e8";"subdued":"#575858";"unstarted":"#e75569";"warn":"#e6d566";"_fallback":"#8c8d8c"]
 fg:{[colorstr;s]tc:tui.color colorstr; ty:tui.style ..[Foreground:p.tc]; tui.render[ty;s]};"fg"help"Render s with Foreground color s"
 colorent:{s: epr x; t:et x; c:entpal@et x; fg[c;s]}
@@ -16,7 +16,7 @@ story.pstr:{
   archived:renderar[a]
   type:storytypes[t]; type:fg[entpal t;"[$type]"]; name:trunc n
   e:?[nan e;"_";"%0.f"$e]; est:"[$e]"; est:fg[entpal"done";est]
-  wfstate:wfrender[cache.workflowstates wfsid]
+  wfstate:renderwf[cache.workflowstates wfsid]
   "$form / ${archived}${type}${est}${wfstate} $name"}
 epic.pstr:{
   form:colorent x; (a;n;s;wfsid):x[!"archived name state epic_state_id"]
