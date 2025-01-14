@@ -2,7 +2,8 @@
 entpal:..["backlog":"#8c8d8c";"custom-field":"#df8632";"done":"#71b259";"epic-workflow":"#97c6e8";"epic":"#71b259";"group":"#d96e7b";"iteration":"#3895c9";"key-result":"#71b259";"label":"#ad9865";"member":"#8bb771";"objective":"#df8632";"story":"#ad87f3";"workflow":"#97c6e8";"bug":"#e75569";"chore":"#3895c9";"done":"#71b259";"error":"#e75569";"feature":"#e6d566";"info":"#71b259";"prompt":"#58b1e4";"role.admin":"#e6d566";"role.member":"#3a95c9";"role.observer":"#8c8d8c";"role.owner":"#e75569";"started":"#ad87f3";"task":"#3a95c9";"title":"#97c6e8";"subdued":"#575858";"unstarted":"#e75569";"warn":"#e6d566";"_fallback":"#8c8d8c"]
 fg:{[colorstr;s]tc:tui.color colorstr; ty:tui.style ..[Foreground:p.tc]; tui.render[ty;s]};"fg"help"Render s with Foreground color s"
 colorent:{s: epr x; t:et x; c:entpal@et x; fg[c;s]}
-trunc:{?[31<""#x;x[0;30]+"...";x]}
+sc.width::60
+trunc:{?[(sc.width-1)<""#x;x[0;sc.width]+"...";x]}
 member.pstr:{p:colorent x; m:member.mention x; "$p / $m"}
 currentmember.pstr:{i:id x; m:x["mention_name"]; qq#member["$i"] / $m#}
 storytypes:..[feature:"Ftr";bug:"Bug";chore:"Chr"]
@@ -45,7 +46,7 @@ pstr:{[e]t:et e
    "story"~t;story.pstr e
    "epic"~t;epic.pstr e
    default.pstr e]}
-pp:{say pstr x} / TODO Accept array of ents / Tacit pp:say pstr@
+pp:{?["d"~@x;say pstr x;x]} / TODO Accept array of ents / Tacit pp:say pstr@
 ll:{pp'ls x} / Tacit pp'ls@
 colorprompt:{ari.prompt::colorent[x]+"> "}
 cd:{ari.c::x; ?[x;colorprompt x;ari.prompt::prompt]; 1};

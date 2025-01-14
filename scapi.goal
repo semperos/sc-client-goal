@@ -29,7 +29,7 @@ putter:{[path;arg;body]u:path+"/"+id[arg]; b:""json body; put[u;..[Body:b]]}
 {name:sgmg x; ::["${name}.list";..q.get[p.x]]}'sc.ents[0 1 2 3 5 6 7 8 9] / Listable endpoints
 epicworkflow:{get"epic-workflow"}; epicworkflow.get:{get"epic-workflow"} / Singleton: workflow that epics go through
 member.current:{get"member"} / Singleton: token's member + workspace info
-workspace.get:{(member"")["workspace2";"url_slug"]} / Synthetic singleton: workspace slug
+workspace.slug:{(member.current"")["workspace2";"url_slug"]} / Synthetic singleton: workspace slug
 story.history:{[st]i:id[st]; get"stories/$i/history"}
 / TODO Make sc.q* functions that pluck out IDs from entity args
 stsglobals:{[fld]k:"sts."+san[fld]; ::[k;fld]}; stsglobals'stsfields / DEF story search fields
@@ -54,12 +54,12 @@ entity.get:{ / IDs are unique within workspace, so we can fetch an id without kn
  fid:f["s"$x;]; (..p.fid[y])/[{entity.get.cont};0n;ents]
  }
 member.mention:{[mem]mem["profile";"mention_name"]}
-current:{base:..[archived:-0w;"workflow_state_types":!"backlog unstarted started"]; sts@base["owner_id"]:id[x]}
+current:{base:..[archived:-0w;"workflow_state_types":!"backlog unstarted started"]; story.search@base["owner_id"]:id[x]}
 / All epics a member's stories were a part of, as well as all stories not assigned to an epic.
 mbworkstreams:{[yearmonthS;yearmonthE;member] / [yearmonthS,yearmonthE) eg "2024-01"
   q:..[archived:-0w;"workflow_state_types":,"done";"owner_id":q.id p.member
        "completed_at_start":"$yearmonthS-01T00:00:00Z";"completed_at_end":"$yearmonthE-01T00:00:00Z"]
-  ss:sts[q]; sids:(..x["epic_id"])'ss; nil:(..0n~'p.sids); inepicids:^?nil^sids; outepics:^?nil#ss
+  ss:story.search[q]; sids:(..x["epic_id"])'ss; nil:(..0n~'p.sids); inepicids:^?nil^sids; outepics:^?nil#ss
   /epicnames:(..x["name"][0;30]+"...")'epics
   epics:epic.get'inepicids; epicnames:(..name)'epics
   epicurls:(..x["app_url"])'epics; etype:(#inepicids)#"epic"
@@ -71,7 +71,7 @@ ls:{[e]t:et e
    "member"~t;    member.stories e;  "milestone"~t; milestone.epics e
    "objective"~t; objective.epics e; "story"~t;     story.tasks e
    "workflow"~t;  workflow.states e; :error"Can't list children of type '$t'"]}
-whoami:{pp@member.get""}
+whoami:{member.current""}
 1
 
 /
