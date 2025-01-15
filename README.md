@@ -101,6 +101,24 @@ t:hd!+cols; t:@[t;"id";"i"$]; t:@[t;"name";rx/\t/ sub " "] / int id; name w/out 
 f:"labels.csv"; f print"\t"csv t; say "Wrote archive-able labels to $f"
 ```
 
+Cancel stories owned by former members of your Shortcut workspace that are in progress (never closed out). This assumes that there's either a workflow state with the word "cancel" in it, or that the very last workflow state in your workflows is the best fit to convey that something was cancelled. It also relies on the `cache.` bindings that are made in `scdata.goal`, so make sure you load `sc.goal` (which loads `scdata.goal`) when running this:
+
+```
+cancelWorkflowStates:cache.workflowstates[&{rx/(?i)cancel/@x}'{x["name"]}'cache.workflowstates]
+workflowToCancelState:(@[;"_workflow_id"]'cancelWorkflowStates)!(cancelWorkflowStates)
+lastWorkflowState:{[workflowId] *|cache.workflows[workflowId;"states"]}
+cancelWorkflowState:{[workflowId]
+ state:workflowToCancelState[workflowId]
+ ?[0<#state;state;lastWorkflowState[workflowId]]}
+formerMembers:cache.members@&0w={x["disabled"]}'cache.members
+ss:story.search@..["owner_ids":@[;"id"]'formerMembers;"archived":-0w;"workflow_state_types":!"started"]
+count:#ss; say"Cancelling $count stories..."
+cancelStory:{[s]
+ workflowId:s"workflow_id";newWorkflowState:cancelWorkflowState[workflowId]
+ story.update[s"id";..["workflow_state_id":newWorkflowState"id"]]}
+cancelStory'ss
+```
+
 ## License
 
 Copyright 2024 Daniel Gregoire
