@@ -1,2 +1,9 @@
 / TODO Add help for fetchers, putters, posters
-"story.search"help rq#{ "archived": true, "completed_at_end": "2016-12-31T12:30:00Z", "completed_at_start": "2016-12-31T12:30:00Z", "created_at_end": "2016-12-31T12:30:00Z", "created_at_start": "2016-12-31T12:30:00Z", "deadline_end": "2016-12-31T12:30:00Z", "deadline_start": "2016-12-31T12:30:00Z", "epic_id": 123, "epic_ids": [123], "estimate": 123, "external_id": null, "group_id": "12345678-9012-3456-7890-123456789012", "group_ids": ["12345678-9012-3456-7890-123456789012"], "includes_description": true, "iteration_id": 123, "iteration_ids": [123], "label_ids": [123], "label_name": "foo", "owner_id": "12345678-9012-3456-7890-123456789012", "owner_ids": ["12345678-9012-3456-7890-123456789012"], "project_id": 123, "project_ids": [123], "requested_by_id": "12345678-9012-3456-7890-123456789012", "story_type": "bug", "updated_at_end": "2016-12-31T12:30:00Z", "updated_at_start": "2016-12-31T12:30:00Z", "workflow_state_id": 123, "workflow_state_types": ["backlog"] }#
+"story.search"help rq#{ "archived": true, "completed_at_end": "2016-12-31T12:30:00Z", "completed_at_start": "2016-12-31T12:30:00Z", "created_at_end": "2016-12-31T12:30:00Z", "created_at_start": "2016-12-31T12:30:00Z",
+"deadline_end": "2016-12-31T12:30:00Z", "deadline_start": "2016-12-31T12:30:00Z", "epic_id": 123, "epic_ids": [123], "estimate": 123, "external_id": null,
+"group_id": "12345678-9012-3456-7890-123456789012", "group_ids": ["12345678-9012-3456-7890-123456789012"], "includes_description": true,
+"iteration_id": 123, "iteration_ids": [123], "label_ids": [123], "label_name": "foo", "owner_id": "12345678-9012-3456-7890-123456789012", "owner_ids": ["12345678-9012-3456-7890-123456789012"],
+"project_id": 123, "project_ids": [123], "requested_by_id": "12345678-9012-3456-7890-123456789012", "story_type": "bug", "updated_at_end": "2016-12-31T12:30:00Z", "updated_at_start": "2016-12-31T12:30:00Z",
+"workflow_state_id": 123, "workflow_state_types": ["backlog"] }
+
+workflow_state_types:(backlog|done|started|unstarted)#
