@@ -1,8 +1,8 @@
 / DATA FETCH for specific workspace2
 cache.refresh:{
- cache.members::get"members"; cache.groups::get"groups"; cache.workflows::get"workflows"
+ cache.members::get"members"; cache.groups::get"groups"; wfs::get"workflows"; cache.workflows::(@[;"id"]'wfs)!(wfs)
  cache.workflowstates::()!()
- {[wf]{[state]cache.workflowstates[state"id"]:state}'wf"states"}'cache.workflows
+ {[wf]{[wf;state]state["_workflow_id"]:wf"id";cache.workflowstates[state"id"]:state}[wf]'wf"states"}'cache.workflows
  cache.epicworkflow::get"epic-workflow"; cache.epicworkflowstates::(@[;"id"]'epsts)!epsts:cache.epicworkflow["epic_states"]
  1}
 cache.refresh""
