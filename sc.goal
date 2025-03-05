@@ -24,20 +24,6 @@ epic.pstr:{
   archived:renderar[a]; name:trunc n
   wfstate:renderwf[cache.epicworkflowstates wfsid]
   "$form / ${archived}${wfstate} $name"}
-/
-ac"cache*"
-cache.epicworkflow
-eps:epic""
-ep:*eps
-ep
-pp@ep
-ep"state"
-ess:epic.stories'eps
-pp''ess
-st:story"33"
-cache.epicworkflow"epic_states"
-cache.refresh""
-\
 default.pstr:{p:colorent x; n:x"name"; "$p / $n"}
 tcurrentmember:{[e]*/(#e)>(!e)?!"mention_name workspace2"}
 pstr:{[e]t:et e
