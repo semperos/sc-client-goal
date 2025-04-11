@@ -1,4 +1,115 @@
-""import"sc-client/scapi"; ""import"sc-client/scdata"; ""import"sc-client/schelp"
+/ Shortcut API
+prompt:"sc> "; ari.prompt:prompt
+url:"https://api.app.shortcut.com/api/v3/"; tok: 'env "SHORTCUT_API_TOKEN"; sc.debug:0
+aj:"application/json"; hd:..["Shortcut-Token":tok;Accept:aj;"Content-Type":aj]; hc:http.client[..[Header:hd]]
+hp:{[f]{[httpf;path]hc:?[sc.debug;..[Header:hd;Debug:1];hc]; r: 'httpf[hc;url+path]; 'json r"bodystring"}[f]}
+hpp:{[f]{[httpf;path;reqopts]hc:?[sc.debug;..[Header:hd;Debug:1];hc]; r: 'httpf[hc;url+path;reqopts]; 'json r"bodystring"}[f]}
+get:hp[http.get]; post:hpp[http.post]; put:hpp[http.put]; browse:{[ent]u:ent"app_url"; shell "open $u"}
+sg:{or[..["stories":"story"]x;-1_x]}; sgmg:{[s]munge@sg s}; infi:1=sign; / singular, munge + singular, infinity-to-int
+/ Strings
+etk:"entity_type"; sc.ents:!"custom-fields epic-workflows epics groups iterations key-results labels members milestones objectives stories workflows"
+stsfields:!"archived completed_at_end completed_at_start created_at_end created_at_start deadline_end deadline_start epic_id epic_ids estimate external_id group_id group_ids includes_description iteration_id iteration_ids label_ids label_name owner_id owner_ids project_id project_ids requested_by_id story_type updated_at_end updated_at_start workflow_state_id workflow_state_types"
+idfs:(!"d s n")!({id:x"id";?["s"=@id;id;$"i"$id]};{x};{$"i"$x}); id:{tp:@x; ?[|/tp=!idfs;idfs[tp]x;$x]} / fmt ids
+et:{x[etk]}
+entn:{n:x"name"; ?[n="";x["profile";"name"];n]}
+typeid:{et:x[etk]; type:munge[et]; i:id[x]; (type;i)}
+epr:{(type;i):typeid x; :qq/$type["$i"]/}
+/ TODO Brittle.
+/ entprstr:{(type;id):typeid x; n:entn x; "$name[$i] / $n"}
+/ ari.print:{and[ist x;:fmt.tbl[x;3;3;"%.1f"]]; and["d"=@x;:(?[|/etk=!x;(et:x[etk];say entprstr[x]);say x])]; and["e"=@x;:(say x; say"")]; say $x}
+cd:{ari.c::x; ?[x;ari.prompt::epr[x]+"> ";ari.prompt::prompt]; 1}; jj:say" "json
+san:{sub[rx/[^a-zA-Z0-9]/;""]x}; jp:{say " "json x}; / sanitize Goal name / print JSON (of ent)
+fetcher:{[path;arg]u:?[""~arg;path;path+"/"+id[arg]];get u}
+poster:{[path;body]b:""json body; post[path;..[Body:b]]}
+putter:{[path;arg;body]u:path+"/"+id[arg]; b:""json body; put[u;..[Body:b]]}
+/ NB: DELETE endpoints intentionally unsupported. Archive via PUT as needed.
+{name:sgmg x; ::["${name}.get";fetcher[x]]; ::[name;fetcher[x]]}'sc.ents
+{name:sgmg x; ::["${name}.create";poster[x]]}'sc.ents
+{name:sgmg x; ::["${name}.update";putter[x]]}'sc.ents
+/ TODO Define member and group fetchers to accept either id or mention name
+{name:sgmg x; ::["${name}.list";..q.get[p.x]]}'sc.ents[0 1 2 3 5 6 7 8 9] / Listable endpoints
+epicworkflow:{get"epic-workflow"}; epicworkflow.get:{get"epic-workflow"} / Singleton: workflow that epics go through
+member.current:{get"member"} / Singleton: token's member + workspace info
+workspace.slug:{(member.current"")["workspace2";"url_slug"]} / Synthetic singleton: workspace slug
+story.history:{[st]i:id[st]; get"stories/$i/history"}
+/ TODO Make sc.q* functions that pluck out IDs from entity args
+stsglobals:{[fld]k:"sts."+san[fld]; ::[k;fld]}; stsglobals'stsfields / DEF story search fields
+story.search:{[d]body:""json d; post["stories/search";..[Body:body]]} / API story search
+story.update.bulk:{[d]body:""json d; put["stories/bulk";..[Body:body]]}
+/ Containers
+story.tasks:{[st]i:id st; st:story i; st"tasks"}
+story.comments:{[st]i:id st; get"stories/$i/comments"}
+story.comments.create:{[st;body]i:id st; b:""json body; post["stories/$i/comments";..[Body:b]]}
+epic.stories:{[ep]i:id ep; get"epics/$i/stories"}
+iteration.stories:{[it]i:id it; get"iterations/$i/stories"}
+label.stories:{[lb]i:id lb; get"labels/$i/stories"}; label.epics:{[lb]i:id lb; get"labels/$i/epics"}
+member.stories:{[mb]i:id mb; story.search@..["owner_id":i]}
+milestone.epics:{[mi]i:id mi; get"milestones/$i/epics"}
+objective.epics:{[ob]i:id ob; get"objectives/$i/epics"}
+group.members:{[gr]i:id gr; gr:group i; ids:gr"member_ids"; member'ids}
+workflow.states:{[wf]i:id wf; wf:workflow i; wf"states"}
+entity.get:{ / IDs are unique within workspace, so we can fetch an id without knowing its type
+ hc:?[sc.debug;..[Header:hd;Debug:1];hc]
+ ents:sc.ents[9 2 4 3 7 6 8 9 5 10 0 1]; or[(#ents)=#sc.ents;:error"entity.get doesn't try all entities"]
+ entity.get.cont::1
+ f:{r: 'http.get[hc;"${url}${y}/$x"]; entity.get.cont::~r"ok"; res:and[r"ok";json r"bodystring"]}
+ fid:f["s"$x;]; (..p.fid[y])/[{entity.get.cont};0n;ents]
+ }
+member.mention:{[mem]mem["profile";"mention_name"]}
+current:{base:..[archived:-0w;"workflow_state_types":!"backlog unstarted started"]; story.search@base["owner_id"]:id[x]}
+/ All epics a member's stories were a part of, as well as all stories not assigned to an epic.
+mbworkstreams:{[yearmonthS;yearmonthE;member] / [yearmonthS,yearmonthE) eg "2024-01"
+  q:..[archived:-0w;"workflow_state_types":,"done";"owner_id":q.id p.member
+       "completed_at_start":"$yearmonthS-01T00:00:00Z";"completed_at_end":"$yearmonthE-01T00:00:00Z"]
+  ss:story.search[q]; sids:(..x["epic_id"])'ss; nil:(..0n~'p.sids); inepicids:^?nil^sids; outepics:^?nil#ss
+  /epicnames:(..x["name"][0;30]+"...")'epics
+  epics:epic.get'inepicids; epicnames:(..name)'epics
+  epicurls:(..x["app_url"])'epics; etype:(#inepicids)#"epic"
+  storynames:(..name)'ss; storyurls:(..x["app_url"])'ss; stype:(#outepics)#"story"
+  (!"type id name url")!(etype,stype;inepicids,(..id)'outepics;epicnames,storynames;epicurls,storyurls)}
+ls:{[e]t:et e
+ ?["epic"~t;      epic.stories e;    "iteration"~t; iteration.stories e
+   "group"~t;     group.members e;   "label"~t;     label.stories e
+   "member"~t;    member.stories e;  "milestone"~t; milestone.epics e
+   "objective"~t; objective.epics e; "story"~t;     story.tasks e
+   "workflow"~t;  workflow.states e; :error"Can't list children of type '$t'"]}
+whoami:{member.current""}
+/ Data
+/ DATA FETCH for specific workspace2
+cache.refresh:{
+ cache.members::get"members"; cache.groups::get"groups"; wfs::get"workflows"; cache.workflows::(@[;"id"]'wfs)!(wfs)
+ cache.workflowstates::()!()
+ {[wf]{[wf;state]state["_workflow_id"]:wf"id";cache.workflowstates[state"id"]:state}[wf]'wf"states"}'cache.workflows
+ cache.epicworkflow::get"epic-workflow"; cache.epicworkflowstates::(@[;"id"]'epsts)!epsts:cache.epicworkflow["epic_states"]
+ 1}
+cache.refresh""
+/ >> DEF mb.* (members) >>
+mnames:(..profile["mention_name"])'cache.members; mnamed:mnames!cache.members
+mnameglobals:{[mname]k:"mb."+san[mname]; v:mnamed[mname]; n:mnamed[mname;"profile";"name"]; help[k;"Member: $n"]; ::[k;v]}
+mnameglobals'mnames
+cache.membersbyid:((..id)'cache.members)!cache.members
+/ << DEF mb.* (members) <<
+/ >> DEF gr.* (groups) >>
+gnames:(..x["mention_name"])'cache.groups; gnamed:gnames!cache.groups; gnameglobals:{[gname]k:"gr."+san[gname]; v:gnamed[gname]; n:gnamed[gname;"name"]; help[k;"Group/Team: $n"]; ::[k;v]}
+ign:gnameglobals'gnames / DEF gr. (groups)
+cache.groupsbyid:((..id)'cache.groups)!cache.groups
+/ << DEF gr.* (groups)
+/ Story workflow states
+story.isworkflowstatetype:{[type;st] wfst:st"workflow_state_id";type=cache.workflowstates[wfst]"type"}
+(story.isbacklog;story.isdone;story.isstarted;story.isunstarted):story.isworkflowstatetype'!"backlog done started unstarted"
+/ Epic workflow states
+epic.isworkflowstatetype:{[type;ep] id:ep"epic_state_id"; type=epsts[id]"type"}
+(epic.isdone;epic.isstarted;epic.isunstarted):epic.isworkflowstatetype'!"done started unstarted"
+/ Help
+/ TODO Add help for fetchers, putters, posters
+"story.search"help rq#{ "archived": true, "completed_at_end": "2016-12-31T12:30:00Z", "completed_at_start": "2016-12-31T12:30:00Z", "created_at_end": "2016-12-31T12:30:00Z", "created_at_start": "2016-12-31T12:30:00Z",
+"deadline_end": "2016-12-31T12:30:00Z", "deadline_start": "2016-12-31T12:30:00Z", "epic_id": 123, "epic_ids": [123], "estimate": 123, "external_id": null,
+"group_id": "12345678-9012-3456-7890-123456789012", "group_ids": ["12345678-9012-3456-7890-123456789012"], "includes_description": true,
+"iteration_id": 123, "iteration_ids": [123], "label_ids": [123], "label_name": "foo", "owner_id": "12345678-9012-3456-7890-123456789012", "owner_ids": ["12345678-9012-3456-7890-123456789012"],
+"project_id": 123, "project_ids": [123], "requested_by_id": "12345678-9012-3456-7890-123456789012", "story_type": "bug", "updated_at_end": "2016-12-31T12:30:00Z", "updated_at_start": "2016-12-31T12:30:00Z",
+"workflow_state_id": 123, "workflow_state_types": ["backlog"] }
+workflow_state_types:(backlog|done|started|unstarted)#
+/ CLI Niceties
 entpal:..["backlog":"#8c8d8c";"custom-field":"#df8632";"done":"#71b259";"epic-workflow":"#97c6e8";"epic":"#71b259";"group":"#d96e7b";"iteration":"#3895c9";"key-result":"#71b259";"label":"#ad9865";"member":"#8bb771";"objective":"#df8632";"story":"#ad87f3";"workflow":"#97c6e8";"bug":"#e75569";"chore":"#3895c9";"done":"#71b259";"error":"#e75569";"feature":"#e6d566";"info":"#71b259";"prompt":"#58b1e4";"role.admin":"#e6d566";"role.member":"#3a95c9";"role.observer":"#8c8d8c";"role.owner":"#e75569";"started":"#ad87f3";"task":"#3a95c9";"title":"#97c6e8";"subdued":"#575858";"unstarted":"#e75569";"warn":"#e6d566";"_fallback":"#8c8d8c"]
 fg:{[colorstr;s]tc:tui.color colorstr; ty:tui.style ..[Foreground:p.tc]; tui.render[ty;s]};"fg"help"Render s with Foreground color s"
 colorent:{s: epr x; t:et x; c:entpal@et x; fg[c;s]}
@@ -37,5 +148,3 @@ ll:{pp'ls x} / Tacit pp'ls@
 colorprompt:{ari.prompt::colorent[x]+"> "}
 cd:{ari.c::x; ?[x;colorprompt x;ari.prompt::prompt]; 1};
 1
-
-
