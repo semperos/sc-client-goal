@@ -36,17 +36,13 @@ To start interacting with the Shortcut API via Goal, run the following command w
 ari -l sc.goal
 ```
 
-For one-shot scripts, use the following (requires you to fetch any entities that you need, see [scdata.goal](./scdata.goal))
-
-```shell
-ari -l scapi.goal your-script.goal
-```
+Alternatively, you can `""import"sc-client/sc"` from your Goal program (run via `ari`).
 
 ## Gotchas
 
-* Goal deserializes JSON `null` as `0n` which is its NaN value. 
-* Goal deserializes JSON `true` as `0w` which is its positive infinity value.
-* Goal deserializes JSON `false` as `-0w` which is its negative infinity value.
+- Goal deserializes JSON `null` as `0n` which is its NaN value.
+- Goal deserializes JSON `true` as `0w` which is its positive infinity value.
+- Goal deserializes JSON `false` as `-0w` which is its negative infinity value.
 
 ## Examples
 
@@ -70,7 +66,7 @@ itnumws:{[its]                    / Num epics + stories wout epic in last 10 ite
  numepics + numnonepic
 }
 ac"gr.*"                          / See which teams are defined
-itnumws@groupits gr.yourteamhere  / Report 
+itnumws@groupits gr.yourteamhere  / Report
 ```
 
 **Produce a CSV of labels** that are no longer in use for in-progress work:
@@ -128,4 +124,3 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
