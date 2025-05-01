@@ -35,6 +35,7 @@ story.history:{[st]i:id[st]; get"stories/$i/history"}
 / TODO Make sc.q* functions that pluck out IDs from entity args
 stsglobals:{[fld]k:"sts."+san[fld]; ::[k;fld]}; stsglobals'stsfields / DEF story search fields
 story.search:{[d]body:""json d; post["stories/search";..[Body:body]]} / API story search
+story.create.bulk:{[d]body:""json d; post["stories/bulk";..[Body:body]]}
 story.update.bulk:{[d]body:""json d; put["stories/bulk";..[Body:body]]}
 / Containers
 story.tasks:{[st]i:id st; st:story i; st"tasks"}
