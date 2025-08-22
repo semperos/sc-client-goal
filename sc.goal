@@ -1,6 +1,7 @@
 / Shortcut API
 prompt:"sc> "; ari.prompt:prompt
-url:"https://api.app.shortcut.com/api/v3/"; tok: 'env "SHORTCUT_API_TOKEN"; sc.debug:0
+hoste:env "SHORTCUT_API_HOST";host:?["e"~@hoste;"api.app.shortcut.com";hoste]
+url:"https://$host/api/v3/"; tok: 'env "SHORTCUT_API_TOKEN"; sc.debug:0
 aj:"application/json"; hd:..["Shortcut-Token":tok;Accept:aj;"Content-Type":aj]; hc:http.client[..[Header:hd]]
 hp:{[f]{[httpf;path]hc:?[sc.debug;..[Header:hd;Debug:1];hc]; r: 'httpf[hc;url+path]; 'json r"bodystring"}[f]}
 hpp:{[f]{[httpf;path;reqopts]hc:?[sc.debug;..[Header:hd;Debug:1];hc]; r: 'httpf[hc;url+path;reqopts]; 'json r"bodystring"}[f]}
@@ -56,6 +57,11 @@ entity.get:{ / IDs are unique within workspace, so we can fetch an id without kn
  f:{r: 'http.get[hc;"${url}${y}/$x"]; entity.get.cont::~r"ok"; res:and[r"ok";json r"bodystring"]}
  fid:f["s"$x;]; (..p.fid[y])/[{entity.get.cont};0n;ents]
  }
+search:{[qp]res:http.get[hc;url+"search";..[QueryParam:qp]];json res"bodystring"}
+search.stories:{[qp]res:http.get[hc;url+"search/stories";..[QueryParam:qp]];json res"bodystring"}
+search.epics:{[qp]res:http.get[hc;url+"search/epics";..[QueryParam:qp]];json res"bodystring"}
+search.iterations:{[qp]res:http.get[hc;url+"search/iterations";..[QueryParam:qp]];json res"bodystring"}
+search.objectives:{[qp]res:http.get[hc;url+"search/objectives";..[QueryParam:qp]];json res"bodystring"}
 member.mention:{[mem]mem["profile";"mention_name"]}
 current:{base:..[archived:-0w;"workflow_state_types":!"backlog unstarted started"]; story.search@base["owner_id"]:id[x]}
 / All epics a member's stories were a part of, as well as all stories not assigned to an epic.
