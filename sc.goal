@@ -84,7 +84,7 @@ whoami:{member.current""}
 / Data
 / DATA FETCH for specific workspace2
 cache.refresh:{
- cache.members::get"members"; cache.groups::get"groups"; wfs::get"workflows"; cache.workflows::(@[;"id"]'wfs)!(wfs)
+ cache.members::get"members"; cache.groups::get"groups"; wfs::get"workflows"; cache.workflows::((..id)'wfs)!(wfs)
  cache.workflowstates::()!()
  {[wf]{[wf;state]state["_workflow_id"]:wf"id";cache.workflowstates[state"id"]:state}[wf]'wf"states"}'cache.workflows
  cache.epicworkflow::get"epic-workflow"; cache.epicworkflowstates::(@[;"id"]'epsts)!epsts:cache.epicworkflow["epic_states"]
@@ -118,7 +118,8 @@ epic.isworkflowstatetype:{[type;ep] id:ep"epic_state_id"; type=epsts[id]"type"}
 workflow_state_types:(backlog|done|started|unstarted)#
 / CLI Niceties
 entpal:..["backlog":"#8c8d8c";"custom-field":"#df8632";"done":"#71b259";"epic-workflow":"#97c6e8";"epic":"#71b259";"group":"#d96e7b";"iteration":"#3895c9";"key-result":"#71b259";"label":"#ad9865";"member":"#8bb771";"objective":"#df8632";"story":"#ad87f3";"workflow":"#97c6e8";"bug":"#e75569";"chore":"#3895c9";"done":"#71b259";"error":"#e75569";"feature":"#e6d566";"info":"#71b259";"prompt":"#58b1e4";"role.admin":"#e6d566";"role.member":"#3a95c9";"role.observer":"#8c8d8c";"role.owner":"#e75569";"started":"#ad87f3";"task":"#3a95c9";"title":"#97c6e8";"subdued":"#575858";"unstarted":"#e75569";"warn":"#e6d566";"_fallback":"#8c8d8c"]
-fg:{[colorstr;s]tc:tui.color colorstr; ty:tui.style ..[Foreground:p.tc]; tui.render[ty;s]};"fg"help"Render s with Foreground color s"
+hexen:(!16)!,/!10,"c"$'97+!6; sexen:+"s"$'hexen; htor:{16/'{sexen[x]}''"c"$''-2$1_"c"$_x}
+fg:{[hexclr;s](r;g;b):htor hexclr;"\x1b[38;2;$r;$g;${b}m$s\x1b[0m"}
 colorent:{s: epr x; t:et x; c:entpal@et x; fg[c;s]}
 sc.width::60
 trunc:{?[(sc.width-1)<""#x;x[0;sc.width]+"...";x]}
