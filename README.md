@@ -33,7 +33,7 @@ export SHORCUT_API_TOKEN=$(sops -d --extract '["shortcut"]["token"]' $HOME/.conf
 To start interacting with the Shortcut API via Goal, run the following command which will fetch entities from your Shortcut workspace (e.g., workflows, teams & members) and provide a `sc>` prompt when ready:
 
 ```shell
-ari -l sc.goal
+ari -i sc.goal
 ```
 
 Alternatively, you can `""import"sc-client/sc"` from your Goal program (run via `ari`).
